@@ -1,0 +1,53 @@
+name: 'Nullify DAST Action'
+description: 'Test your API endpoints with Nullify DAST'
+branding:
+  icon: 'activity'
+  color: 'purple'
+inputs:
+  app-name:
+    description: Name of the application to be tested
+    required: true
+  args:
+    description: Space-separated arguments to include (e.g. -d, -v for debug and verbose modes)
+    required: false
+    default: ""
+  github-owner:
+    description: Name of the GitHub owner (Username or Organization)
+    required: true
+  github-repo:
+    description: Name of the GitHub repository
+    required: true
+  github-token:
+    description: set this to `${{ github.token }}`
+    required: true
+  header:
+    description: Header to include in authorization request
+    required: false
+  spec-path:
+    description: Absolute directory of the API specification to be tested
+    required: true
+  target-host:
+    description: Target host endpoint of the application to be tested
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Install Nullify CLI
+      shell: sh
+      run: |
+        wget -q https://github.com/Nullify-Platform/cli/releases/download/${{ env.NULLIFY_VERSION }}/nullify_linux_amd64_${{ env.NULLIFY_VERSION }}
+ -O /usr/bin/nullify -O nullify
+        sudo chmod +x nullify
+    - name: Execute Nullify DAST
+      shell: sh
+      run: |
+        ./nullify ${{ inputs.args }} \
+          --host ${{ inputs.host }} \
+          --github-token ${{ input.github-token }} \
+          dast \
+          --app-name ${{ inputs.app-name }} \
+          --spec-path ${{ inputs.spec-path }} \
+          --target-host ${{ inputs.target-host }} \
+          --github-owner ${{ inputs.github-owner }} \
+          --github-repo ${{ inputs.github-repo }} \
+          --header ${{ inputs.header }}
