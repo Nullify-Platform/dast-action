@@ -1,0 +1,15 @@
+name: CI Require Labels
+on:
+  pull_request:
+    types: [ opened, synchronize, labeled, unlabeled ]
+  merge_group:
+run-name: Require Labels by @${{ github.actor }} ${{ github.sha }}
+jobs:
+  require-labels:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Require Labels
+        id: require-labels
+        uses: nullify-platform/github-actions/actions/require-labels@main
