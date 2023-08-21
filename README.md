@@ -21,20 +21,19 @@ The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action 
 
 ## Inputs
 
-| Name               | Description                                               | Required | Default |
-|--------------------|-----------------------------------------------------------|----------|---------|
-| **`app-name`**     | Name of the application to be tested                      | `true`   |         |
-| **`args`**         | Arguments to be passed to the scan as a multi-line option | `true`   |         |
-| **`github-owner`** | Name of the GitHub owner (Username or Organization)       | `true`   |         |
-| **`github-repo`**  | Name of the GitHub repository                             | `true`   |         |
-| **`github-token`** | GitHub Action job token                                   | `true`   |         |
-| **`spec-path`**    | Absolute directory of the API specification to be tested  | `true`   |         |
-| **`target-host`**  | Target host endpoint of the application to be tested      | `true`   |         |
-| **`header`**       | Header to include in authorization request                | `false`  |         |
+| Name                    | Description                                                                                      | Required | Default                  |
+|-------------------------|--------------------------------------------------------------------------------------------------|----------|--------------------------|
+| **`app-name`**          | Name of the application to be tested                                                             | `true`   |                          |
+| **`spec-path`**         | Absolute directory of the API specification to be tested                                         | `true`   |                          |
+| **`target-host`**       | Target host endpoint of the application to be tested                                             | `true`   |                          |
+| **`base-args`**         | Arguments to be passed to the scan as a multi-line option                                        | `false`  | -v                       |
+| **`github-repository`** | The owner and repository name t0 create the issue dashboard on. For example, octocat/Hello-World | `false`  | ${{ github.repository }} |
+| **`github-token`**      | The GitHub API token to authenticate with Nullify                                                | `false`  | ${{ github.token }}      |
+| **`nullify-host`**      | Nullify API host                                                                                 | `false`  | api.nullify.ai           |
+| **`nullify-version`**   | Version of the Nullify CLI to use                                                                | `false`  | 0.0.0                    |
+| **`header`**            | Header to include in all requests to your app for authorization                                  | `false`  |                          |
 
 ## Example usage
-
-**Required** Pass in the following arguments using the inputs.
 
 ```yaml
 name: nullify-dast
@@ -53,11 +52,8 @@ jobs:
       - name: Run Nullify vulnerability scanner
         uses: nullify-platform/dast-action@0.0.1
         with:
-          github-token: ${{ github.token }}
           app-name: 'My REST API'
-          spec-path: '${{ github.workspace }}/openapi.json'
-          target-host: 'api.myapp1234.ai'
-          github-owner: my-github
-          github-repo: my-repo
           header: 'Authorization: Bearer 1234'
+          spec-path: 'openapi.json'
+          target-host: 'api.myapp1234.dev'
 ```
