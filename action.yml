@@ -7,47 +7,59 @@ inputs:
   app-name:
     description: Name of the application to be tested
     required: true
-  args:
-    description: Space-separated arguments to include (e.g. -d, -v for debug and verbose modes)
-    required: false
-    default: ""
-  github-owner:
-    description: Name of the GitHub owner (Username or Organization)
-    required: true
-  github-repo:
-    description: Name of the GitHub repository
-    required: true
-  github-token:
-    description: set this to `${{ github.token }}`
-    required: true
-  header:
-    description: Header to include in authorization request
-    required: false
   spec-path:
     description: Absolute directory of the API specification to be tested
     required: true
   target-host:
     description: Target host endpoint of the application to be tested
     required: true
+  base-args:
+    description: Space-separated arguments to include (e.g. -d, -v for debug and verbose modes)
+    required: false
+    default: "-v"
+  github-repository:
+    description: Name of the GitHub repository
+    required: false
+    default: ${{ github.repository }}
+  github-token:
+    description: GitHub API token which will be exchanged for a Nullify token
+    required: false
+    default: ${{ github.token }}
+  header:
+    description: Header to include in authorization request
+    required: false
+  nullify-host:
+    description: Nullify API host e.g. api.nullify.ai
+    required: false
+    default: "api.nullify.ai"
+  nullify-version:
+    description: Nullify CLI version to be used
+    required: false
+    default: "0.0.0"
 runs:
   using: "composite"
   steps:
     - name: Install Nullify CLI
       shell: sh
       run: |
-        wget -q https://github.com/Nullify-Platform/cli/releases/download/${{ env.NULLIFY_VERSION }}/nullify_linux_amd64_${{ env.NULLIFY_VERSION }}
- -O /usr/bin/nullify -O nullify
-        sudo chmod +x nullify
+        download_url="https://github.com/Nullify-Platform/cli/releases/download/v${{ inputs.nullify-version }}/nullify_linux_amd64_${{ inputs.nullify-version }}"
+        wget -q $download_url -O ./nullify
+        sudo chmod +x ./nullify
     - name: Execute Nullify DAST
       shell: sh
       run: |
-        ./nullify ${{ inputs.args }} \
-          --host ${{ inputs.host }} \
-          --github-token ${{ input.github-token }} \
+        repo_fullname=${{ inputs.github-repository }}
+        repo_owner=${repo_fullname%%/*}
+        repo_name=${repo_fullname#*/}
+        export GITHUB_ACTIONS=true
+        export GITHUB_ACTION_REPOSITORY=${{ github.repository }}
+        ./nullify ${{ inputs.base-args }} \
+          --host "${{ inputs.nullify-host }}" \
+          --github-token "${{ inputs.github-token }}" \
           dast \
-          --app-name ${{ inputs.app-name }} \
-          --spec-path ${{ inputs.spec-path }} \
-          --target-host ${{ inputs.target-host }} \
-          --github-owner ${{ inputs.github-owner }} \
-          --github-repo ${{ inputs.github-repo }} \
-          --header ${{ inputs.header }}
+            --app-name "${{ inputs.app-name }}" \
+            --spec-path "${{ inputs.spec-path }}" \
+            --target-host "${{ inputs.target-host }}" \
+            --github-owner "$repo_owner" \
+            --github-repo "$repo_name" \
+            --header "${{ inputs.header }}"
