@@ -1,12 +1,5 @@
 name: Release
 on:
-  workflow_dispatch:
-    inputs:
-      releaseType:
-        description: Create a draft release
-        required: true
-        type: boolean
-        default: false
   push:
     branches:
       - main
@@ -29,39 +22,12 @@ jobs:
       - name: Get Release Version
         id: get-version
         uses: nullify-platform/github-actions/actions/release-version@main
-      - run: |
-          echo "**Version:** ${{ steps.get-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Short SHA:** $(git rev-parse --short HEAD)" >> $GITHUB_STEP_SUMMARY
-  build:
-    if: ${{ needs.get-version.outputs.version != 'undefined' || (github.event_name == 'workflow_dispatch' && needs.get-version.outputs.version != 'undefined') }}
-    name: Build
-    needs: [ get-version ]
-    runs-on: ubuntu-latest
-    container: golang:1.21.0-alpine
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set Release Variables
-        run: echo "VERSION=${{ needs.get-version.outputs.version }}" >> $GITHUB_ENV
-      - name: Build CLI
-        run: |
-          apk add --no-cache make
-          make package
-      - name: Upload Binaries
-        uses: actions/upload-artifact@v3
-        with:
-          name: binaries
-          retention-days: 2
-          path: bin/*
   release:
-    if: ${{ needs.get-version.outputs.version != 'undefined' || (github.event_name == 'workflow_dispatch' && needs.get-version.outputs.version != 'undefined') }}
+    if: ${{ needs.get-version.outputs.version != 'undefined' }}
     name: Release
     runs-on: ubuntu-latest
-    needs: [ get-version, build ]
+    needs: [ get-version]
     steps:
-      - name: Download Binaries
-        uses: actions/download-artifact@v3
-        with:
-          path: ${{ github.workspace }}
       - name: Generate Release
         uses: softprops/action-gh-release@v1
         env:
@@ -72,5 +38,3 @@ jobs:
           append_body: true
           tag_name: v${{ env.VERSION }}
           token: ${{ github.token }}
-          files: |
-            ${{ github.workspace }}/binaries/*
