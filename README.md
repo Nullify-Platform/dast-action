@@ -11,9 +11,15 @@
   <a href="https://docs.nullify.ai/features/api-scanning/cli/">
       <img src="https://img.shields.io/badge/docs-docs.nullify.ai-purple" alt="Documentation" />
   </a>
+  <a href="https://opensource.org/licenses/MIT">
+      <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License" />
+  </a>
+  <a href="https://securityscorecards.dev/viewer/?uri=github.com/Nullify-Platform/dast-action">
+      <img src="https://api.securityscorecards.dev/projects/github.com/Nullify-Platform/dast-action/badge" alt="OpenSSF Scorecard" />
+  </a>
 </p>
 
-The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action enables you to integrate continuous API fuzzing and DAST into your CI pipeline.
+The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action enables you to integrate continuous API fuzzing and DAST into your CI pipeline. This action installs and orchestrates the [Nullify CLI](https://github.com/Nullify-Platform/cli).
 
 ## Getting Started
  * Add this Nullify Action to your GitHub repository
