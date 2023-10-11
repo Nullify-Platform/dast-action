@@ -1,6 +1,7 @@
-<a href="https://nullify.ai">
-  <img src="https://uploads-ssl.webflow.com/6492db86d53f84f396b6623d/64dad6c12b98dee05eb08088_nullify%20logo.png" alt="Nullify" width="300"/>
-</a>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://uploads-ssl.webflow.com/6492db86d53f84f396b6623d/64dad6bb69dc97eb5c69a9b8_nullify%20logo%20white.png">
+  <img alt="Nullify Logo" src="https://uploads-ssl.webflow.com/6492db86d53f84f396b6623d/64dad6c12b98dee05eb08088_nullify%20logo.png">
+</picture>
 
 # Nullify DAST Action
 
