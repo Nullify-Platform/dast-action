@@ -23,7 +23,7 @@ The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action 
 
 ## Getting Started
  * Add this Nullify Action to your GitHub repository
- * See our [quickstart guide](https://docs.nullify.ai/features/api-testing) for more info
+ * See our [quickstart guide](https://docs.nullify.ai/features/dynamic-testing) for more info
 
 ## Inputs
 
