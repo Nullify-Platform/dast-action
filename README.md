@@ -37,7 +37,7 @@ The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action 
 | github-repository | The owner and repository name t0 create the issue dashboard on. For example, octocat/Hello-World | `false`  | ${{ github.repository }} |
 | github-token      | The GitHub API token to authenticate with Nullify                                                | `false`  | ${{ github.token }}      |
 | nullify-host      | Nullify API host                                                                                 | `false`  | api.nullify.ai           |
-| nullify-version   | Version of the Nullify CLI to use                                                                | `false`  | v0.0.1                   |
+| nullify-version   | Version of the Nullify CLI to use                                                                | `false`  | 0.1.13                   |
 | header            | Header to include in all requests to your app for authorization                                  | `false`  |                          |
 
 ## Example usage
