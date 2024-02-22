@@ -13,5 +13,27 @@
       "matchUpdateTypes": ["major", "minor", "patch", "digest", "pin", "pinDigest", "lockFileMaintenance"],
       "matchPackagePatterns": ["*"]
     }
-  ]
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "^action\\.yml$",
+        "^README\\.md$"
+      ],
+      "matchStrings": [
+        "nullify-version:\n      description: Nullify CLI version to be used\n      required: false\n      default: \"(?<currentValue>.*?)\"",
+        "| nullify-version   | Version of the Nullify CLI to use                                                                | `false`  | (?<currentValue>.*?)                   |"
+      ],
+      "depNameTemplate": "github.com/nullify-platform/cli",
+      "datasourceTemplate": "go"
+    }
+  ],
+  "postUpgradeTasks": {
+    "fileFilters": ["README.md"],
+    "commands": [
+      "npm install -g markdown-table-formatter",
+      "markdown-table-formatter README.md"
+    ],
+    "executionMode": "update"
+  }
 }
