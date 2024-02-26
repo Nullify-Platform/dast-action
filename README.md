@@ -40,7 +40,7 @@ The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action 
 | nullify-version   | Version of the Nullify CLI to use                                                                | `false`  | 0.1.13                   |
 | header            | Header to include in all requests to your app for authorization                                  | `false`  |                          |
 
-## Example usage
+## Example Usage
 
 ```yaml
 name: nullify-dast
@@ -59,6 +59,35 @@ jobs:
       - name: Run Nullify vulnerability scanner
         uses: nullify-platform/dast-action@v0.0.5
         with:
+          app-name: 'My REST API'
+          header: 'Authorization: Bearer 1234'
+          spec-path: 'openapi.json'
+          target-host: 'api.myapp1234.dev'
+```
+
+## Example Usage (Enterprise Tier)
+
+Enterprise tier customers have a custom domain name for the Nullify API.
+This must be set using the `nullify-host` input.
+
+```yaml
+name: nullify-dast
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  nullify-dast:
+    name: Nullify DAST
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run Nullify vulnerability scanner
+        uses: nullify-platform/dast-action@v0.0.5
+        with:
+          nullify-host: api.mycompany.nullify.ai
           app-name: 'My REST API'
           header: 'Authorization: Bearer 1234'
           spec-path: 'openapi.json'
