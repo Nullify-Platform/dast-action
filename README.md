@@ -39,7 +39,10 @@ The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action 
 | nullify-host      | Nullify API host                                                                                 | `false`  | api.nullify.ai           |
 | nullify-version   | Version of the Nullify CLI to use                                                                | `false`  | 0.1.13                   |
 | header            | Header to include in all requests to your app for authorization                                  | `false`  |                          |
-| local             | Run the scan locally from the GitHub action instead of Nullify cloud                             | `false`  | false                    |
+| local             | Run the scan from the GitHub action instead of on Nullify Cloud                                  | `false`  | false                    |
+
+Often the `target-host` is a staging environment in a private network.
+In this case, deploy a GitHub Action runner in the same private network then set `local: true` to run the scan from the GitHub action.
 
 ## Example Usage
 
