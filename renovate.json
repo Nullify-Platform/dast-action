@@ -19,7 +19,7 @@
       "groupSlug": "cli",
       "matchUpdateTypes": ["major", "minor", "patch"],
       "matchDepNames": ["github.com/nullify-platform/cli"],
-      "schedule": ["hourly"],
+      "schedule": ["every 1 hour"],
       "labels": ["patch"]
     }
   ],
