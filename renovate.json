@@ -30,8 +30,8 @@
         "^README\\.md$"
       ],
       "matchStrings": [
-        "nullify-version:\n      description: Nullify CLI version to be used\n      required: false\n      default: \"(?<currentValue>.*?)\"",
-        "| nullify-version   | Version of the Nullify CLI to use                                                                | `false`  | (?<currentValue>.*?)                   |"
+        "nullify-version:\\n    description:.*\\n    required: false\\n    default: \"(?<currentValue>.*?)\"",
+        "\\| nullify-version.*\\|.*\\|.*\\| (?<currentValue>.*?) "
       ],
       "depNameTemplate": "github.com/nullify-platform/cli",
       "datasourceTemplate": "go"

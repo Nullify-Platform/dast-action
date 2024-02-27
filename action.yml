@@ -37,9 +37,9 @@ inputs:
     required: false
     default: "0.1.13"
   local:
-    description: Nullify dynamic analysis scan run locally 
-    required: false 
-    default: false 
+    description: Nullify dynamic analysis scan run locally
+    required: false
+    default: false
 runs:
   using: "composite"
   steps:
