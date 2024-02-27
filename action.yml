@@ -61,7 +61,7 @@ runs:
           --host "${{ inputs.nullify-host }}" \
           --github-token "${{ inputs.github-token }}" \
           dast \
-            --local \
+            ${{ inputs.local == "true" && "--local" || "" }} \
             --app-name "${{ inputs.app-name }}" \
             --spec-path "${{ inputs.spec-path }}" \
             --target-host "${{ inputs.target-host }}" \
