@@ -39,6 +39,7 @@ The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action 
 | nullify-host      | Nullify API host                                                                                 | `false`  | api.nullify.ai           |
 | nullify-version   | Version of the Nullify CLI to use                                                                | `false`  | 0.1.13                   |
 | header            | Header to include in all requests to your app for authorization                                  | `false`  |                          |
+| local             | Run the scan locally from the GitHub action instead of Nullify cloud                             | `false`  | false                    |
 
 ## Example Usage
 
