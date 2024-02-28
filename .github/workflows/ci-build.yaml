@@ -26,4 +26,5 @@ jobs:
       - name: Commit Changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
+          file_pattern: README.md
           commit_message: update readme
