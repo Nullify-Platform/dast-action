@@ -61,7 +61,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Run Nullify vulnerability scanner
-        uses: nullify-platform/dast-action@v0.0.5
+        uses: nullify-platform/dast-action@main
         with:
           app-name: 'My REST API'
           header: 'Authorization: Bearer 1234'
@@ -89,7 +89,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Run Nullify vulnerability scanner
-        uses: nullify-platform/dast-action@v0.0.5
+        uses: nullify-platform/dast-action@main
         with:
           nullify-host: api.mycompany.nullify.ai
           app-name: 'My REST API'
