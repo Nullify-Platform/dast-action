@@ -1,11 +1,11 @@
-name: "build"
+name: Build, Test and Format
 on:
   pull_request:
 env:
   NULLIFY_VERSION: 0.0.0
 jobs:
   build:
-    name: build
+    name: Build, Test and Format
     runs-on: ubuntu-22.04
     permissions:
       contents: write
@@ -20,10 +20,10 @@ jobs:
         run: |
           ./nullify -d
       - name: Format README
-        env: 
-          CI_COMMIT_MESSAGE: Format README
-          CI_COMMIT_AUTHOR: Continuous Integration
         run: |
           npm install -g markdown-table-formatter
           markdown-table-formatter README.md
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: update readme
