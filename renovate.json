@@ -36,13 +36,5 @@
       "depNameTemplate": "github.com/nullify-platform/cli",
       "datasourceTemplate": "go"
     }
-  ],
-  "postUpgradeTasks": {
-    "fileFilters": ["README.md"],
-    "commands": [
-      "npm install -g markdown-table-formatter",
-      "markdown-table-formatter README.md"
-    ],
-    "executionMode": "update"
-  }
+  ]
 }

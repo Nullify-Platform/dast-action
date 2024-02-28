@@ -1,0 +1,29 @@
+name: "build"
+on:
+  pull_request:
+env:
+  NULLIFY_VERSION: 0.0.0
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Nullify CLI
+        run: |
+          wget -q https://github.com/Nullify-Platform/cli/releases/download/v${{ env.NULLIFY_VERSION }}/nullify_linux_amd64_${{ env.NULLIFY_VERSION }} -O nullify
+          chmod +x nullify
+      - name: Test Nullify CLI
+        run: |
+          ./nullify -d
+      - name: Format README
+        env: 
+          CI_COMMIT_MESSAGE: Format README
+          CI_COMMIT_AUTHOR: Continuous Integration
+        run: |
+          npm install -g markdown-table-formatter
+          markdown-table-formatter README.md
+      - uses: stefanzweifel/git-auto-commit-action@v5
