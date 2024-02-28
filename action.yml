@@ -50,6 +50,7 @@ runs:
         wget -q $download_url -O ./nullify
         sudo chmod +x ./nullify
     - name: Execute Nullify DAST
+      if: ${{ inputs.local == 'true' }}
       shell: sh
       run: |
         repo_fullname=${{ inputs.github-repository }}
@@ -61,7 +62,26 @@ runs:
           --host "${{ inputs.nullify-host }}" \
           --github-token "${{ inputs.github-token }}" \
           dast \
-            ${{ inputs.local == "true" && "--local" || "" }} \
+            --local \
+            --app-name "${{ inputs.app-name }}" \
+            --spec-path "${{ inputs.spec-path }}" \
+            --target-host "${{ inputs.target-host }}" \
+            --github-owner "$repo_owner" \
+            --github-repo "$repo_name" \
+            --header "${{ inputs.header }}"
+    - name: Execute Nullify DAST
+      if: ${{ inputs.local != 'true' }}
+      shell: sh
+      run: |
+        repo_fullname=${{ inputs.github-repository }}
+        repo_owner=${repo_fullname%%/*}
+        repo_name=${repo_fullname#*/}
+        export GITHUB_ACTIONS=true
+        export GITHUB_ACTION_REPOSITORY=${{ github.repository }}
+        ./nullify ${{ inputs.base-args }} \
+          --host "${{ inputs.nullify-host }}" \
+          --github-token "${{ inputs.github-token }}" \
+          dast \
             --app-name "${{ inputs.app-name }}" \
             --spec-path "${{ inputs.spec-path }}" \
             --target-host "${{ inputs.target-host }}" \
