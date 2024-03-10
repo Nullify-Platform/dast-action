@@ -29,7 +29,7 @@ jobs:
     needs: [ get-version]
     steps:
       - name: Generate Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           VERSION: ${{ needs.get-version.outputs.version }}
         with:
