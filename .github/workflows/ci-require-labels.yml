@@ -1,15 +1,20 @@
+# Require labels to be added to a PR before merging
+# This is configured as a branch protection setting
 name: CI Require Labels
 on:
   pull_request:
-    types: [ opened, synchronize, labeled, unlabeled ]
+    types: [opened, labeled, unlabeled, synchronize]
   merge_group:
-run-name: Require Labels by @${{ github.actor }} ${{ github.sha }}
+run-name: CI Require Labels by @${{ github.actor }} ${{ github.sha }}
+permissions:
+  pull-requests: read
 jobs:
   require-labels:
     if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.require-labels.outputs.status }}
     steps:
-      - uses: actions/checkout@v4
       - name: Require Labels
         id: require-labels
         uses: nullify-platform/github-actions/actions/require-labels@main
