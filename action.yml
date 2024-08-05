@@ -35,7 +35,7 @@ inputs:
   nullify-version:
     description: Nullify CLI version to be used
     required: false
-    default: "0.9.8"
+    default: "0.9.9"
   local:
     description: Nullify dynamic analysis scan run locally
     required: false
