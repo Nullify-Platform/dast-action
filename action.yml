@@ -36,6 +36,10 @@ inputs:
     description: Nullify CLI version to be used
     required: false
     default: "0.10.10"
+  os-arch:
+    description: Nullify CLI 'OS Arch' to be used with default `linux_amd64`
+    required: false
+    default: "linux_amd64"
   local:
     description: Nullify dynamic analysis scan run locally
     required: false
@@ -46,7 +50,7 @@ runs:
     - name: Install Nullify CLI
       shell: sh
       run: |
-        download_url="https://github.com/Nullify-Platform/cli/releases/download/v${{ inputs.nullify-version }}/nullify_linux_amd64_${{ inputs.nullify-version }}"
+        download_url="https://github.com/Nullify-Platform/cli/releases/download/v${{ inputs.nullify-version }}/nullify_${{ inputs.os-arch }}_${{ inputs.nullify-version }}"
         wget -q $download_url -O ./nullify
         sudo chmod +x ./nullify
     - name: Execute Nullify DAST
