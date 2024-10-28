@@ -3,6 +3,7 @@ on:
   pull_request:
 env:
   NULLIFY_VERSION: 0.0.0
+  NULLIFY_ARCH: linux_amd64  # New environment variable
 jobs:
   build:
     name: Build, Test and Format
@@ -14,7 +15,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Install Nullify CLI
         run: |
-          wget -q https://github.com/Nullify-Platform/cli/releases/download/v${{ env.NULLIFY_VERSION }}/nullify_linux_amd64_${{ env.NULLIFY_VERSION }} -O nullify
+          download_url="https://github.com/Nullify-Platform/cli/releases/download/v${{ env.NULLIFY_VERSION }}/nullify_${{ env.NULLIFY_ARCH }}_${{ env.NULLIFY_VERSION }}"
+          wget -q $download_url -O nullify
           chmod +x nullify
       - name: Test Nullify CLI
         run: |
