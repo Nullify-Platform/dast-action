@@ -44,6 +44,9 @@ inputs:
     description: Nullify dynamic analysis scan run locally
     required: false
     default: 'false'
+  image-label:
+    description: Label to identify the Docker image to use for the scan
+    required: false
 runs:
   using: "composite"
   steps:
@@ -72,7 +75,8 @@ runs:
             --target-host "${{ inputs.target-host }}" \
             --github-owner "$repo_owner" \
             --github-repo "$repo_name" \
-            --header "${{ inputs.header }}"
+            --header "${{ inputs.header }}" \
+            ${{ inputs.image-label != '' && format('--image-label "{0}"', inputs.image-label) || '' }}
     - name: Execute Nullify DAST
       if: ${{ inputs.local != 'true' }}
       shell: sh
@@ -91,4 +95,5 @@ runs:
             --target-host "${{ inputs.target-host }}" \
             --github-owner "$repo_owner" \
             --github-repo "$repo_name" \
-            --header "${{ inputs.header }}"
+            --header "${{ inputs.header }}" \
+            ${{ inputs.image-label != '' && format('--image-label "{0}"', inputs.image-label) || '' }}
