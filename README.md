@@ -42,6 +42,24 @@ The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action 
 | local             | Run the scan from the GitHub action instead of on Nullify Cloud                                  | `false`  | false                    |
 | image-label       | Label to identify the Docker image being tested                                                  | `false`  |                          |
 
+### Authentication Parameters
+
+| Name              | Description                                                                                      | Required | Default                  |
+|-------------------|--------------------------------------------------------------------------------------------------|----------|--------------------------|
+| auth-method       | Authentication method to use (basic, bearer, session, oauth2, jwt, custom)                       | `false`  | bearer                   |
+| auth-username     | Username for Basic Auth authentication                                                           | `false`  |                          |
+| auth-password     | Password for Basic Auth authentication                                                           | `false`  |                          |
+| auth-token        | Token for Bearer Token, JWT, or OAuth2 authentication                                            | `false`  |                          |
+| auth-client-id    | Client ID for OAuth2 authentication                                                              | `false`  |                          |
+| auth-client-secret| Client Secret for OAuth2 authentication                                                          | `false`  |                          |
+| auth-token-url    | Token URL for OAuth2 authentication                                                              | `false`  |                          |
+| auth-scope        | Scope for OAuth2 authentication                                                                  | `false`  |                          |
+| auth-login-url    | URL to perform login for session-based authentication                                            | `false`  |                          |
+| auth-login-body   | JSON body to send for session-based authentication login                                         | `false`  |                          |
+| auth-login-selector | CSS selector to extract session token/cookie from login response                               | `false`  |                          |
+| auth-custom-headers | JSON string of custom headers for authentication                                               | `false`  |                          |
+| auth-custom-params | JSON string of custom query parameters for authentication                                       | `false`  |                          |
+
 Often the `target-host` is a staging environment in a private network.
 In this case, deploy a GitHub Action runner in the same private network then set `local: 'true'` to run the scan from the GitHub action.
 
@@ -68,6 +86,89 @@ jobs:
           header: 'Authorization: Bearer 1234'
           spec-path: 'openapi.json'
           target-host: 'api.myapp1234.dev'
+```
+
+## Authentication Examples
+
+### Basic Auth Example
+
+```yaml
+name: nullify-dast-basic-auth
+on:
+  push:
+    branches:
+      - main
+jobs:
+  nullify-dast:
+    name: Nullify DAST with Basic Auth
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run Nullify vulnerability scanner
+        uses: nullify-platform/dast-action@main
+        with:
+          app-name: 'My REST API'
+          spec-path: 'openapi.json'
+          target-host: 'api.myapp1234.dev'
+          auth-method: 'basic'
+          auth-username: ${{ secrets.API_USERNAME }}
+          auth-password: ${{ secrets.API_PASSWORD }}
+          local: 'true'
+```
+
+### OAuth2 Example
+
+```yaml
+name: nullify-dast-oauth
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Run weekly on Mondays
+jobs:
+  nullify-dast:
+    name: Nullify DAST with OAuth2
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run Nullify vulnerability scanner
+        uses: nullify-platform/dast-action@main
+        with:
+          app-name: 'My OAuth API'
+          spec-path: 'openapi.json'
+          target-host: 'api.myapp1234.dev'
+          auth-method: 'oauth2'
+          auth-client-id: ${{ secrets.OAUTH_CLIENT_ID }}
+          auth-client-secret: ${{ secrets.OAUTH_CLIENT_SECRET }}
+          auth-token-url: 'https://auth.myapp1234.dev/oauth/token'
+          auth-scope: 'read write'
+          local: 'true'
+```
+
+### Session-based Authentication Example
+
+```yaml
+name: nullify-dast-session
+on:
+  pull_request:
+jobs:
+  nullify-dast:
+    name: Nullify DAST with Session Auth
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run Nullify vulnerability scanner
+        uses: nullify-platform/dast-action@main
+        with:
+          app-name: 'My Web App'
+          spec-path: 'openapi.json'
+          target-host: 'app.myapp1234.dev'
+          auth-method: 'session'
+          auth-login-url: 'https://app.myapp1234.dev/login'
+          auth-login-body: '{"username":"${{ secrets.APP_USERNAME }}","password":"${{ secrets.APP_PASSWORD }}"}'
+          auth-login-selector: 'response.headers.set-cookie'
+          local: 'true'
 ```
 
 ## Example Usage (Enterprise Tier)
