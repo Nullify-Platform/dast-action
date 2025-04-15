@@ -62,21 +62,21 @@ The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action 
 
 ### Role-Based Authorization Testing Parameters
 
-| Name                | Description                                           | Required | Default |
-|---------------------|-------------------------------------------------------|----------|---------|
-| user-1-role         | Role name for user 1                                  | `false`  |         |
-| user-1-username     | Username for user 1 (basic auth)                      | `false`  |         |
-| user-1-password     | Password for user 1 (basic auth)                      | `false`  |         |
-| user-1-token        | Token for user 1 (bearer auth)                        | `false`  |         |
-| user-1-client-id    | Client ID for user 1 (OAuth2)                         | `false`  |         |
-| user-1-client-secret| Client Secret for user 1 (OAuth2)                     | `false`  |         |
-| user-1-token-url    | Token URL for user 1 (OAuth2)                         | `false`  |         |
-| user-1-scope        | Scope for user 1 (OAuth2)                             | `false`  |         |
-| user-1-login-url    | Login URL for user 1 (session auth)                   | `false`  |         |
-| user-1-login-body   | Login body for user 1 (session auth)                  | `false`  |         |
-| user-1-login-selector | Login selector for user 1 (session auth)            | `false`  |         |
-| user-1-custom-headers | Custom headers for user 1 (custom auth)             | `false`  |         |
-| user-1-custom-params  | Custom parameters for user 1 (custom auth)          | `false`  |         |
+| Name                  | Description                                | Required | Default |
+|-----------------------|--------------------------------------------|----------|---------|
+| user-1-role           | Role name for user 1                       | `false`  |         |
+| user-1-username       | Username for user 1 (basic auth)           | `false`  |         |
+| user-1-password       | Password for user 1 (basic auth)           | `false`  |         |
+| user-1-token          | Token for user 1 (bearer auth)             | `false`  |         |
+| user-1-client-id      | Client ID for user 1 (OAuth2)              | `false`  |         |
+| user-1-client-secret  | Client Secret for user 1 (OAuth2)          | `false`  |         |
+| user-1-token-url      | Token URL for user 1 (OAuth2)              | `false`  |         |
+| user-1-scope          | Scope for user 1 (OAuth2)                  | `false`  |         |
+| user-1-login-url      | Login URL for user 1 (session auth)        | `false`  |         |
+| user-1-login-body     | Login body for user 1 (session auth)       | `false`  |         |
+| user-1-login-selector | Login selector for user 1 (session auth)   | `false`  |         |
+| user-1-custom-headers | Custom headers for user 1 (custom auth)    | `false`  |         |
+| user-1-custom-params  | Custom parameters for user 1 (custom auth) | `false`  |         |
 
 *Note: Parameters for user-2, user-3, and user-4 follow the same pattern as user-1.*
 
