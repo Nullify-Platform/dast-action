@@ -44,21 +44,21 @@ The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action 
 
 ### Authentication Parameters
 
-| Name              | Description                                                                                      | Required | Default                  |
-|-------------------|--------------------------------------------------------------------------------------------------|----------|--------------------------|
-| auth-method       | Authentication method to use (basic, bearer, session, oauth2, jwt, custom)                       | `false`  | bearer                   |
-| auth-username     | Username for Basic Auth authentication                                                           | `false`  |                          |
-| auth-password     | Password for Basic Auth authentication                                                           | `false`  |                          |
-| auth-token        | Token for Bearer Token, JWT, or OAuth2 authentication                                            | `false`  |                          |
-| auth-client-id    | Client ID for OAuth2 authentication                                                              | `false`  |                          |
-| auth-client-secret| Client Secret for OAuth2 authentication                                                          | `false`  |                          |
-| auth-token-url    | Token URL for OAuth2 authentication                                                              | `false`  |                          |
-| auth-scope        | Scope for OAuth2 authentication                                                                  | `false`  |                          |
-| auth-login-url    | URL to perform login for session-based authentication                                            | `false`  |                          |
-| auth-login-body   | JSON body to send for session-based authentication login                                         | `false`  |                          |
-| auth-login-selector | CSS selector to extract session token/cookie from login response                               | `false`  |                          |
-| auth-custom-headers | JSON string of custom headers for authentication                                               | `false`  |                          |
-| auth-custom-params | JSON string of custom query parameters for authentication                                       | `false`  |                          |
+| Name                | Description                                                                | Required | Default |
+|---------------------|----------------------------------------------------------------------------|----------|---------|
+| auth-method         | Authentication method to use (basic, bearer, session, oauth2, jwt, custom) | `false`  | bearer  |
+| auth-username       | Username for Basic Auth authentication                                     | `false`  |         |
+| auth-password       | Password for Basic Auth authentication                                     | `false`  |         |
+| auth-token          | Token for Bearer Token, JWT, or OAuth2 authentication                      | `false`  |         |
+| auth-client-id      | Client ID for OAuth2 authentication                                        | `false`  |         |
+| auth-client-secret  | Client Secret for OAuth2 authentication                                    | `false`  |         |
+| auth-token-url      | Token URL for OAuth2 authentication                                        | `false`  |         |
+| auth-scope          | Scope for OAuth2 authentication                                            | `false`  |         |
+| auth-login-url      | URL to perform login for session-based authentication                      | `false`  |         |
+| auth-login-body     | JSON body to send for session-based authentication login                   | `false`  |         |
+| auth-login-selector | CSS selector to extract session token/cookie from login response           | `false`  |         |
+| auth-custom-headers | JSON string of custom headers for authentication                           | `false`  |         |
+| auth-custom-params  | JSON string of custom query parameters for authentication                  | `false`  |         |
 
 Often the `target-host` is a staging environment in a private network.
 In this case, deploy a GitHub Action runner in the same private network then set `local: 'true'` to run the scan from the GitHub action.
