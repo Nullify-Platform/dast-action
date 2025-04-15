@@ -60,6 +60,26 @@ The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action 
 | auth-custom-headers | JSON string of custom headers for authentication                           | `false`  |         |
 | auth-custom-params  | JSON string of custom query parameters for authentication                  | `false`  |         |
 
+### Role-Based Authorization Testing Parameters
+
+| Name                | Description                                           | Required | Default |
+|---------------------|-------------------------------------------------------|----------|---------|
+| user-1-role         | Role name for user 1                                  | `false`  |         |
+| user-1-username     | Username for user 1 (basic auth)                      | `false`  |         |
+| user-1-password     | Password for user 1 (basic auth)                      | `false`  |         |
+| user-1-token        | Token for user 1 (bearer auth)                        | `false`  |         |
+| user-1-client-id    | Client ID for user 1 (OAuth2)                         | `false`  |         |
+| user-1-client-secret| Client Secret for user 1 (OAuth2)                     | `false`  |         |
+| user-1-token-url    | Token URL for user 1 (OAuth2)                         | `false`  |         |
+| user-1-scope        | Scope for user 1 (OAuth2)                             | `false`  |         |
+| user-1-login-url    | Login URL for user 1 (session auth)                   | `false`  |         |
+| user-1-login-body   | Login body for user 1 (session auth)                  | `false`  |         |
+| user-1-login-selector | Login selector for user 1 (session auth)            | `false`  |         |
+| user-1-custom-headers | Custom headers for user 1 (custom auth)             | `false`  |         |
+| user-1-custom-params  | Custom parameters for user 1 (custom auth)          | `false`  |         |
+
+*Note: Parameters for user-2, user-3, and user-4 follow the same pattern as user-1.*
+
 Often the `target-host` is a staging environment in a private network.
 In this case, deploy a GitHub Action runner in the same private network then set `local: 'true'` to run the scan from the GitHub action.
 
@@ -200,7 +220,43 @@ jobs:
           target-host: 'api.myapp1234.dev'
 ```
 
-### Authorization Model Assessment Example
+### Authorization Model Assessment
 
 For authorization testing, you can provide multiple users with different roles to verify access controls:
 **Important**: When using `auth-users`, any other single-user authentication parameters (like `auth-token`, `auth-username`, etc.) will be ignored.
+
+### Role-Based Authorization with Individual User Parameters
+
+```yaml
+name: nullify-dast-rbac
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Run weekly on Mondays
+jobs:
+  nullify-dast:
+    name: Nullify DAST with Role-Based Access Control Testing
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run Nullify vulnerability scanner
+        uses: nullify-platform/dast-action@main
+        with:
+          app-name: 'My Role-Based API'
+          spec-path: 'openapi.json'
+          target-host: 'api.myapp1234.dev'
+          # Admin user with bearer token
+          user-1-role: 'admin'
+          user-1-token: ${{ secrets.ADMIN_TOKEN }}
+          # Regular user with basic auth
+          user-2-role: 'user'
+          user-2-username: ${{ secrets.USER_USERNAME }}
+          user-2-password: ${{ secrets.USER_PASSWORD }}
+          # API client with OAuth2
+          user-3-role: 'api-client'
+          user-3-client-id: ${{ secrets.CLIENT_ID }}
+          user-3-client-secret: ${{ secrets.CLIENT_SECRET }}
+          user-3-token-url: 'https://auth.myapp1234.dev/oauth/token'
+          user-3-scope: 'read write'
+          local: 'true'
+```
