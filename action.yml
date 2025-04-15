@@ -32,9 +32,6 @@ inputs:
     description: Authentication method to use (basic, bearer, session, oauth2, jwt, custom)
     required: false
     default: "bearer"
-  auth-users:
-    description: JSON string containing list of users with roles and credentials for authorization testing
-    required: false
   auth-username:
     description: Username for Basic Auth authentication
     required: false
@@ -71,6 +68,174 @@ inputs:
   auth-custom-params:
     description: JSON string of custom query parameters for authentication
     required: false
+  user-1-role:
+    description: Role for user 1
+    required: false
+  user-1-auth-method:
+    description: Authentication method for user 1
+    required: false
+  user-1-username:
+    descript ion: Username for user 1
+    required: false
+  user-1-password:
+    description: Password for user 1
+    required: false
+  user-1-token:
+    description: Token for user 1
+    required: false
+  user-1-client-id:
+    description: Client ID for user 1
+    required: false
+  user-1-client-secret:
+    description: Client Secret for user 1
+    required: false
+  user-1-token-url:
+    description: Token URL for user 1
+    required: false
+  user-1-scope:
+    description: Scope for user 1
+    required: false
+  user-1-login-url:
+    description: Login URL for user 1
+    required: false
+  user-1-login-body:
+    description: Login body for user 1
+    required: false
+  user-1-login-selector:
+    description: Login selector for user 1
+    required: false
+  user-1-custom-headers:
+    description: Custom headers for user 1
+    required: false
+  user-1-custom-params:
+    description: Custom params for user 1
+    required: false
+  user-2-role:
+    description: Role for user 2
+    required: false
+  user-2-auth-method:
+    description: Authentication method for user 2
+    required: false
+  user-2-username:
+    description: Username for user 2
+    required: false
+  user-2-password:
+    description: Password for user 2
+    required: false
+  user-2-token:
+    description: Token for user 2
+    required: false
+  user-2-client-id:
+    description: Client ID for user 2
+    required: false   
+  user-2-client-secret:
+    description: Client Secret for user 2
+    required: false
+  user-2-token-url:
+    description: Token URL for user 2
+    required: false
+  user-2-scope:
+    description: Scope for user 2
+    required: false
+  user-2-login-url:
+    description: Login URL for user 2
+    required: false
+  user-2-login-body:
+    description: Login body for user 2  
+    required: false
+  user-2-login-selector:
+    description: Login selector for user 2
+    required: false
+  user-2-custom-headers:
+    description: Custom headers for user 2
+    required: false
+  user-2-custom-params:
+    description: Custom params for user 2
+    required: false
+  user-3-role:
+    description: Role for user 3
+    required: false
+  user-3-auth-method:
+    description: Authentication method for user 3
+    required: false
+  user-3-username:
+    description: Username for user 3
+    required: false
+  user-3-password:
+    description: Password for user 3
+    required: false
+  user-3-token:
+    description: Token for user 3
+    required: false
+  user-3-client-id:
+    description: Client ID for user 3
+    required: false
+  user-3-client-secret:
+    description: Client Secret for user 3
+    required: false
+  user-3-token-url:
+    description: Token URL for user 3
+    required: false
+  user-3-scope:
+    description: Scope for user 3
+    required: false
+  user-3-login-url:
+    description: Login URL for user 3
+    required: false
+  user-3-login-body:
+    description: Login body for user 3
+    required: false
+  user-3-login-selector:
+    description: Login selector for user 3
+    required: false
+  user-3-custom-headers:
+    description: Custom headers for user 3
+    required: false
+  user-3-custom-params:
+    description: Custom params for user 3
+    required: false
+  user-4-role:
+    description: Role for user 4
+    required: false
+  user-4-auth-method:
+    description: Authentication method for user 4
+    required: false
+  user-4-username:
+    description: Username for user 4
+    required: false
+  user-4-password:
+    description: Password for user 4
+    required: false
+  user-4-token:
+    description: Token for user 4
+    required: false
+  user-4-client-id:
+    description: Client ID for user 4
+    required: false
+  user-4-client-secret:
+    description: Client Secret for user 4
+    required: false
+  user-4-token-url:
+    description: Token URL for user 4
+    required: false
+  user-4-scope:
+    description: Scope for user 4
+    required: false
+  user-4-login-url:
+    description: Login URL for user 4
+    required: false
+  user-4-login-body:
+    description: Login body for user 4
+    required: false
+  user-4-login-selector:
+    description: Login selector for user 4
+    required: false
+  user-4-custom-headers:
+    description: Custom headers for user 4
+    required: false
+  user-4-custom-params:
+    description: Custom params for user 4
+    required: false
   nullify-host:
     description: Nullify API host e.g. api.nullify.ai
     required: false
@@ -90,6 +255,7 @@ inputs:
   image-label:
     description: Label to identify the Docker image to use for the scan
     required: false
+
 runs:
   using: "composite"
   steps:
@@ -100,84 +266,13 @@ runs:
         wget -q $download_url -O ./nullify
         sudo chmod +x ./nullify
     - name: Setup Authentication
-      shell: sh
+      shell: bash
       run: |
-        mkdir -p ~/.nullify
-        
-        # Setup authentication configuration based on method
-        if [ ! -z "${{ inputs.auth-users }}" ]; then
-          # Handle multi-user auth for authorization model assessment
-          cat > ~/.nullify/auth_config.json << EOF
-          {
-            "authorizationModel": true,
-            "users": ${{ inputs.auth-users }}
-          }
-          EOF
-          
-          # Validate JSON format
-          if ! jq empty ~/.nullify/auth_config.json 2>/dev/null; then
-            echo "::error::Invalid JSON format in auth-users parameter"
-            cat ~/.nullify/auth_config.json
-            exit 1
-          fi
-          
-          # Validate required fields for each user
-          VALIDATION_ERROR=0
-          for i in $(jq -r 'try .users | keys | .[]' ~/.nullify/auth_config.json 2>/dev/null || echo ""); do
-            ROLE_NAME=$(jq -r ".users[$i].roleName" ~/.nullify/auth_config.json 2>/dev/null)
-            ROLE_DESC=$(jq -r ".users[$i].roleDescription" ~/.nullify/auth_config.json 2>/dev/null)
-            AUTH_CONFIG=$(jq -r ".users[$i].authConfig" ~/.nullify/auth_config.json 2>/dev/null)
-            
-            if [ "$ROLE_NAME" = "null" ] || [ -z "$ROLE_NAME" ]; then
-              echo "::error::Missing roleName for user at index $i"
-              VALIDATION_ERROR=1
-            fi
-            
-            if [ "$ROLE_DESC" = "null" ] || [ -z "$ROLE_DESC" ]; then
-              echo "::error::Missing roleDescription for user at index $i"
-              VALIDATION_ERROR=1
-            fi
-            
-            if [ "$AUTH_CONFIG" = "null" ] || [ -z "$AUTH_CONFIG" ]; then
-              echo "::error::Missing authConfig for user at index $i"
-              VALIDATION_ERROR=1
-            fi
-          done
-          
-          if [ $VALIDATION_ERROR -eq 1 ]; then
-            exit 1
-          fi
-          
-          echo "Authorization model validation successful with $(jq '.users | length' ~/.nullify/auth_config.json) users"
-          
-        else
-          # Setup single-user authentication configuration
-          cat > ~/.nullify/auth_config.json << EOF
-          {
-            "method": "${{ inputs.auth-method }}"
-          EOF
-          
-          if [ "${{ inputs.auth-method }}" = "basic" ]; then
-            echo ', "username": "${{ inputs.auth-username }}", "password": "${{ inputs.auth-password }}"' >> ~/.nullify/auth_config.json
-          elif [ "${{ inputs.auth-method }}" = "bearer" ]; then
-            echo ', "token": "${{ inputs.auth-token }}"' >> ~/.nullify/auth_config.json
-          elif [ "${{ inputs.auth-method }}" = "jwt" ]; then
-            echo ', "token": "${{ inputs.auth-token }}"' >> ~/.nullify/auth_config.json
-          elif [ "${{ inputs.auth-method }}" = "oauth2" ]; then
-            echo ', "clientId": "${{ inputs.auth-client-id }}", "clientSecret": "${{ inputs.auth-client-secret }}", "tokenUrl": "${{ inputs.auth-token-url }}", "scope": "${{ inputs.auth-scope }}"' >> ~/.nullify/auth_config.json
-          elif [ "${{ inputs.auth-method }}" = "session" ]; then
-            echo ', "loginUrl": "${{ inputs.auth-login-url }}", "loginBody": ${{ inputs.auth-login-body }}, "loginSelector": "${{ inputs.auth-login-selector }}"' >> ~/.nullify/auth_config.json
-          elif [ "${{ inputs.auth-method }}" = "custom" ]; then
-            echo ', "customHeaders": ${{ inputs.auth-custom-headers }}, "customParams": ${{ inputs.auth-custom-params }}' >> ~/.nullify/auth_config.json
-          fi
-          
-          echo '}' >> ~/.nullify/auth_config.json
-        fi
-        
-        # If header is specified, it takes precedence over auth config
-        if [ ! -z "${{ inputs.header }}" ]; then
-          echo "Header specified, will use that instead of auth config"
-        fi
+    if [ -f "${GITHUB_WORKSPACE}/scripts/setup_auth.sh" ]; then
+      bash "${GITHUB_WORKSPACE}/scripts/setup_auth.sh" ~/.nullify/auth_config.json
+    else
+      echo "Warning: setup_auth.sh script not found"
+    fi
     - name: Execute Nullify DAST
       if: ${{ inputs.local == 'true' }}
       shell: sh
@@ -192,7 +287,7 @@ runs:
         AUTH_ARGS=""
         if [ ! -z "${{ inputs.header }}" ]; then
           AUTH_ARGS="--header \"${{ inputs.header }}\""
-        elif [ "${{ inputs.auth-method }}" != "" ]; then
+        elif [ -f ~/.nullify/auth_config.json ]; then
           AUTH_ARGS="--auth-config ~/.nullify/auth_config.json"
         fi
         
@@ -208,6 +303,7 @@ runs:
             --github-repo "$repo_name" \
             $AUTH_ARGS \
             ${{ inputs.image-label != '' && format('--image-label "{0}"', inputs.image-label) || '' }}
+            
     - name: Execute Nullify DAST
       if: ${{ inputs.local != 'true' }}
       shell: sh
@@ -222,7 +318,7 @@ runs:
         AUTH_ARGS=""
         if [ ! -z "${{ inputs.header }}" ]; then
           AUTH_ARGS="--header \"${{ inputs.header }}\""
-        elif [ "${{ inputs.auth-method }}" != "" ]; then
+        elif [ -f ~/.nullify/auth_config.json ]; then
           AUTH_ARGS="--auth-config ~/.nullify/auth_config.json"
         fi
         
