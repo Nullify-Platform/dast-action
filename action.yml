@@ -32,6 +32,9 @@ inputs:
     description: Authentication method to use (basic, bearer, session, oauth2, jwt, custom)
     required: false
     default: "bearer"
+  auth-users:
+    description: JSON string containing list of users with roles and credentials for authorization testing
+    required: false
   auth-username:
     description: Username for Basic Auth authentication
     required: false
@@ -102,26 +105,74 @@ runs:
         mkdir -p ~/.nullify
         
         # Setup authentication configuration based on method
-        cat > ~/.nullify/auth_config.json << EOF
-        {
-          "method": "${{ inputs.auth-method }}"
-        EOF
-        
-        if [ "${{ inputs.auth-method }}" = "basic" ]; then
-          echo ', "username": "${{ inputs.auth-username }}", "password": "${{ inputs.auth-password }}"' >> ~/.nullify/auth_config.json
-        elif [ "${{ inputs.auth-method }}" = "bearer" ]; then
-          echo ', "token": "${{ inputs.auth-token }}"' >> ~/.nullify/auth_config.json
-        elif [ "${{ inputs.auth-method }}" = "jwt" ]; then
-          echo ', "token": "${{ inputs.auth-token }}"' >> ~/.nullify/auth_config.json
-        elif [ "${{ inputs.auth-method }}" = "oauth2" ]; then
-          echo ', "clientId": "${{ inputs.auth-client-id }}", "clientSecret": "${{ inputs.auth-client-secret }}", "tokenUrl": "${{ inputs.auth-token-url }}", "scope": "${{ inputs.auth-scope }}"' >> ~/.nullify/auth_config.json
-        elif [ "${{ inputs.auth-method }}" = "session" ]; then
-          echo ', "loginUrl": "${{ inputs.auth-login-url }}", "loginBody": ${{ inputs.auth-login-body }}, "loginSelector": "${{ inputs.auth-login-selector }}"' >> ~/.nullify/auth_config.json
-        elif [ "${{ inputs.auth-method }}" = "custom" ]; then
-          echo ', "customHeaders": ${{ inputs.auth-custom-headers }}, "customParams": ${{ inputs.auth-custom-params }}' >> ~/.nullify/auth_config.json
+        if [ ! -z "${{ inputs.auth-users }}" ]; then
+          # Handle multi-user auth for authorization model assessment
+          cat > ~/.nullify/auth_config.json << EOF
+          {
+            "authorizationModel": true,
+            "users": ${{ inputs.auth-users }}
+          }
+          EOF
+          
+          # Validate JSON format
+          if ! jq empty ~/.nullify/auth_config.json 2>/dev/null; then
+            echo "::error::Invalid JSON format in auth-users parameter"
+            cat ~/.nullify/auth_config.json
+            exit 1
+          fi
+          
+          # Validate required fields for each user
+          VALIDATION_ERROR=0
+          for i in $(jq -r 'try .users | keys | .[]' ~/.nullify/auth_config.json 2>/dev/null || echo ""); do
+            ROLE_NAME=$(jq -r ".users[$i].roleName" ~/.nullify/auth_config.json 2>/dev/null)
+            ROLE_DESC=$(jq -r ".users[$i].roleDescription" ~/.nullify/auth_config.json 2>/dev/null)
+            AUTH_CONFIG=$(jq -r ".users[$i].authConfig" ~/.nullify/auth_config.json 2>/dev/null)
+            
+            if [ "$ROLE_NAME" = "null" ] || [ -z "$ROLE_NAME" ]; then
+              echo "::error::Missing roleName for user at index $i"
+              VALIDATION_ERROR=1
+            fi
+            
+            if [ "$ROLE_DESC" = "null" ] || [ -z "$ROLE_DESC" ]; then
+              echo "::error::Missing roleDescription for user at index $i"
+              VALIDATION_ERROR=1
+            fi
+            
+            if [ "$AUTH_CONFIG" = "null" ] || [ -z "$AUTH_CONFIG" ]; then
+              echo "::error::Missing authConfig for user at index $i"
+              VALIDATION_ERROR=1
+            fi
+          done
+          
+          if [ $VALIDATION_ERROR -eq 1 ]; then
+            exit 1
+          fi
+          
+          echo "Authorization model validation successful with $(jq '.users | length' ~/.nullify/auth_config.json) users"
+          
+        else
+          # Setup single-user authentication configuration
+          cat > ~/.nullify/auth_config.json << EOF
+          {
+            "method": "${{ inputs.auth-method }}"
+          EOF
+          
+          if [ "${{ inputs.auth-method }}" = "basic" ]; then
+            echo ', "username": "${{ inputs.auth-username }}", "password": "${{ inputs.auth-password }}"' >> ~/.nullify/auth_config.json
+          elif [ "${{ inputs.auth-method }}" = "bearer" ]; then
+            echo ', "token": "${{ inputs.auth-token }}"' >> ~/.nullify/auth_config.json
+          elif [ "${{ inputs.auth-method }}" = "jwt" ]; then
+            echo ', "token": "${{ inputs.auth-token }}"' >> ~/.nullify/auth_config.json
+          elif [ "${{ inputs.auth-method }}" = "oauth2" ]; then
+            echo ', "clientId": "${{ inputs.auth-client-id }}", "clientSecret": "${{ inputs.auth-client-secret }}", "tokenUrl": "${{ inputs.auth-token-url }}", "scope": "${{ inputs.auth-scope }}"' >> ~/.nullify/auth_config.json
+          elif [ "${{ inputs.auth-method }}" = "session" ]; then
+            echo ', "loginUrl": "${{ inputs.auth-login-url }}", "loginBody": ${{ inputs.auth-login-body }}, "loginSelector": "${{ inputs.auth-login-selector }}"' >> ~/.nullify/auth_config.json
+          elif [ "${{ inputs.auth-method }}" = "custom" ]; then
+            echo ', "customHeaders": ${{ inputs.auth-custom-headers }}, "customParams": ${{ inputs.auth-custom-params }}' >> ~/.nullify/auth_config.json
+          fi
+          
+          echo '}' >> ~/.nullify/auth_config.json
         fi
-        
-        echo '}' >> ~/.nullify/auth_config.json
         
         # If header is specified, it takes precedence over auth config
         if [ ! -z "${{ inputs.header }}" ]; then

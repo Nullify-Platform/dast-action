@@ -199,3 +199,79 @@ jobs:
           spec-path: 'openapi.json'
           target-host: 'api.myapp1234.dev'
 ```
+
+### Authorization Model Assessment Example
+
+For authorization testing, you can provide multiple users with different roles to verify access controls:
+**Important**: When using `auth-users`, any other single-user authentication parameters (like `auth-token`, `auth-username`, etc.) will be ignored.
+
+```yaml
+name: nullify-dast-auth-model
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Run weekly on Mondays
+jobs:
+  nullify-dast:
+    name: Nullify DAST with Authorization Model Testing
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run Nullify vulnerability scanner
+        uses: nullify-platform/dast-action@main
+        with:
+          app-name: 'My Role-Based API'
+          spec-path: 'openapi.json'
+          target-host: 'api.myapp1234.dev'
+          auth-method: 'bearer'
+          auth-users: '[
+            {
+              "roleName": "admin",
+              "roleDescription": "Administrator with full access",
+              "authConfig": {
+                "token": "${{ secrets.ADMIN_TOKEN }}"
+              }
+            },
+            {
+              "roleName": "editor",
+              "roleDescription": "Editor with partial access",
+              "authConfig": {
+                "token": "${{ secrets.EDITOR_TOKEN }}"
+              }
+            },
+            {
+              "roleName": "viewer",
+              "roleDescription": "Read-only user",
+              "authConfig": {
+                "token": "${{ secrets.VIEWER_TOKEN }}"
+              }
+            }
+          ]'
+          local: 'true'
+```
+
+You can define users with different authentication methods by specifying their individual auth configurations:
+
+```yaml
+auth-users: '[
+  {
+    "roleName": "admin",
+    "roleDescription": "Administrator with full access",
+    "authConfig": {
+      "method": "bearer",
+      "token": "${{ secrets.ADMIN_TOKEN }}"
+    }
+  },
+  {
+    "roleName": "service-account",
+    "roleDescription": "Service account with API access",
+    "authConfig": {
+      "method": "oauth2",
+      "clientId": "${{ secrets.SERVICE_CLIENT_ID }}",
+      "clientSecret": "${{ secrets.SERVICE_CLIENT_SECRET }}",
+      "tokenUrl": "https://auth.myapp1234.dev/oauth/token",
+      "scope": "api:write"
+    }
+  }
+]'
+```
