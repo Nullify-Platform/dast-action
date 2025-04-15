@@ -28,6 +28,46 @@ inputs:
   header:
     description: Header to include in authorization request
     required: false
+  auth-method:
+    description: Authentication method to use (basic, bearer, session, oauth2, jwt, custom)
+    required: false
+    default: "bearer"
+  auth-username:
+    description: Username for Basic Auth authentication
+    required: false
+  auth-password:
+    description: Password for Basic Auth authentication
+    required: false
+  auth-token:
+    description: Token for Bearer Token, JWT, or OAuth2 authentication
+    required: false
+  auth-client-id:
+    description: Client ID for OAuth2 authentication
+    required: false
+  auth-client-secret:
+    description: Client Secret for OAuth2 authentication
+    required: false
+  auth-token-url:
+    description: Token URL for OAuth2 authentication
+    required: false
+  auth-scope:
+    description: Scope for OAuth2 authentication
+    required: false
+  auth-login-url:
+    description: URL to perform login for session-based authentication
+    required: false
+  auth-login-body:
+    description: JSON body to send for session-based authentication login
+    required: false
+  auth-login-selector:
+    description: CSS selector to extract session token/cookie from login response
+    required: false
+  auth-custom-headers:
+    description: JSON string of custom headers for authentication
+    required: false
+  auth-custom-params:
+    description: JSON string of custom query parameters for authentication
+    required: false
   nullify-host:
     description: Nullify API host e.g. api.nullify.ai
     required: false
@@ -56,6 +96,37 @@ runs:
         download_url="https://github.com/Nullify-Platform/cli/releases/download/v${{ inputs.nullify-version }}/nullify_${{ inputs.os-arch }}_${{ inputs.nullify-version }}"
         wget -q $download_url -O ./nullify
         sudo chmod +x ./nullify
+    - name: Setup Authentication
+      shell: sh
+      run: |
+        mkdir -p ~/.nullify
+        
+        # Setup authentication configuration based on method
+        cat > ~/.nullify/auth_config.json << EOF
+        {
+          "method": "${{ inputs.auth-method }}"
+        EOF
+        
+        if [ "${{ inputs.auth-method }}" = "basic" ]; then
+          echo ', "username": "${{ inputs.auth-username }}", "password": "${{ inputs.auth-password }}"' >> ~/.nullify/auth_config.json
+        elif [ "${{ inputs.auth-method }}" = "bearer" ]; then
+          echo ', "token": "${{ inputs.auth-token }}"' >> ~/.nullify/auth_config.json
+        elif [ "${{ inputs.auth-method }}" = "jwt" ]; then
+          echo ', "token": "${{ inputs.auth-token }}"' >> ~/.nullify/auth_config.json
+        elif [ "${{ inputs.auth-method }}" = "oauth2" ]; then
+          echo ', "clientId": "${{ inputs.auth-client-id }}", "clientSecret": "${{ inputs.auth-client-secret }}", "tokenUrl": "${{ inputs.auth-token-url }}", "scope": "${{ inputs.auth-scope }}"' >> ~/.nullify/auth_config.json
+        elif [ "${{ inputs.auth-method }}" = "session" ]; then
+          echo ', "loginUrl": "${{ inputs.auth-login-url }}", "loginBody": ${{ inputs.auth-login-body }}, "loginSelector": "${{ inputs.auth-login-selector }}"' >> ~/.nullify/auth_config.json
+        elif [ "${{ inputs.auth-method }}" = "custom" ]; then
+          echo ', "customHeaders": ${{ inputs.auth-custom-headers }}, "customParams": ${{ inputs.auth-custom-params }}' >> ~/.nullify/auth_config.json
+        fi
+        
+        echo '}' >> ~/.nullify/auth_config.json
+        
+        # If header is specified, it takes precedence over auth config
+        if [ ! -z "${{ inputs.header }}" ]; then
+          echo "Header specified, will use that instead of auth config"
+        fi
     - name: Execute Nullify DAST
       if: ${{ inputs.local == 'true' }}
       shell: sh
@@ -65,6 +136,15 @@ runs:
         repo_name=${repo_fullname#*/}
         export GITHUB_ACTIONS=true
         export GITHUB_ACTION_REPOSITORY=${{ github.repository }}
+        
+        # Determine auth arguments
+        AUTH_ARGS=""
+        if [ ! -z "${{ inputs.header }}" ]; then
+          AUTH_ARGS="--header \"${{ inputs.header }}\""
+        elif [ "${{ inputs.auth-method }}" != "" ]; then
+          AUTH_ARGS="--auth-config ~/.nullify/auth_config.json"
+        fi
+        
         ./nullify ${{ inputs.base-args }} \
           --host "${{ inputs.nullify-host }}" \
           --github-token "${{ inputs.github-token }}" \
@@ -75,7 +155,7 @@ runs:
             --target-host "${{ inputs.target-host }}" \
             --github-owner "$repo_owner" \
             --github-repo "$repo_name" \
-            --header "${{ inputs.header }}" \
+            $AUTH_ARGS \
             ${{ inputs.image-label != '' && format('--image-label "{0}"', inputs.image-label) || '' }}
     - name: Execute Nullify DAST
       if: ${{ inputs.local != 'true' }}
@@ -86,6 +166,15 @@ runs:
         repo_name=${repo_fullname#*/}
         export GITHUB_ACTIONS=true
         export GITHUB_ACTION_REPOSITORY=${{ github.repository }}
+        
+        # Determine auth arguments
+        AUTH_ARGS=""
+        if [ ! -z "${{ inputs.header }}" ]; then
+          AUTH_ARGS="--header \"${{ inputs.header }}\""
+        elif [ "${{ inputs.auth-method }}" != "" ]; then
+          AUTH_ARGS="--auth-config ~/.nullify/auth_config.json"
+        fi
+        
         ./nullify ${{ inputs.base-args }} \
           --host "${{ inputs.nullify-host }}" \
           --github-token "${{ inputs.github-token }}" \
@@ -95,5 +184,5 @@ runs:
             --target-host "${{ inputs.target-host }}" \
             --github-owner "$repo_owner" \
             --github-repo "$repo_name" \
-            --header "${{ inputs.header }}" \
+            $AUTH_ARGS \
             ${{ inputs.image-label != '' && format('--image-label "{0}"', inputs.image-label) || '' }}
