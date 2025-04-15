@@ -268,11 +268,11 @@ runs:
     - name: Setup Authentication
       shell: bash
       run: |
-    if [ -f "${GITHUB_WORKSPACE}/scripts/setup_auth.sh" ]; then
-      bash "${GITHUB_WORKSPACE}/scripts/setup_auth.sh" ~/.nullify/auth_config.json
-    else
-      echo "Warning: setup_auth.sh script not found"
-    fi
+        if [ -f "${GITHUB_WORKSPACE}/scripts/setup_auth.sh" ]; then
+          bash "${GITHUB_WORKSPACE}/scripts/setup_auth.sh" ~/.nullify/auth_config.json
+        else
+          echo "Warning: setup_auth.sh script not found"
+        fi
     - name: Execute Nullify DAST
       if: ${{ inputs.local == 'true' }}
       shell: sh
