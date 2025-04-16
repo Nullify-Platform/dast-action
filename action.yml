@@ -35,6 +35,9 @@ inputs:
   auth-username:
     description: Username for Basic Auth authentication
     required: false
+  auth-user-description:
+    description: Description for the user
+    required: false
   auth-password:
     description: Password for Basic Auth authentication
     required: false
@@ -110,6 +113,9 @@ inputs:
   user-1-custom-params:
     description: Custom params for user 1
     required: false
+  user-1-description:
+    description: Description for user 1
+    required: false
   user-2-role:
     description: Role for user 2
     required: false
@@ -151,6 +157,9 @@ inputs:
     required: false
   user-2-custom-params:
     description: Custom params for user 2
+    required: false
+  user-2-description:
+    description: Description for user 2
     required: false
   user-3-role:
     description: Role for user 3
@@ -194,6 +203,9 @@ inputs:
   user-3-custom-params:
     description: Custom params for user 3
     required: false
+  user-3-description:
+    description: Description for user 3
+    required: false
   user-4-role:
     description: Role for user 4
     required: false
@@ -235,6 +247,9 @@ inputs:
     required: false
   user-4-custom-params:
     description: Custom params for user 4
+    required: false
+  user-4-description:
+    description: Description for user 4
     required: false
   nullify-host:
     description: Nullify API host e.g. api.nullify.ai

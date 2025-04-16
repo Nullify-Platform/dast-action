@@ -65,6 +65,7 @@ The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action 
 | Name                  | Description                                | Required | Default |
 |-----------------------|--------------------------------------------|----------|---------|
 | user-1-role           | Role name for user 1                       | `false`  |         |
+| user-1-description    | Custom description for user 1              | `false`  |         |
 | user-1-username       | Username for user 1 (basic auth)           | `false`  |         |
 | user-1-password       | Password for user 1 (basic auth)           | `false`  |         |
 | user-1-token          | Token for user 1 (bearer auth)             | `false`  |         |
@@ -247,9 +248,11 @@ jobs:
           target-host: 'api.myapp1234.dev'
           # Admin user with bearer token
           user-1-role: 'admin'
+          user-1-description: 'Administrator with full system access'
           user-1-token: ${{ secrets.ADMIN_TOKEN }}
           # Regular user with basic auth
           user-2-role: 'user'
+          user-2-description: 'Standard user with limited permissions'
           user-2-username: ${{ secrets.USER_USERNAME }}
           user-2-password: ${{ secrets.USER_PASSWORD }}
           # API client with OAuth2
