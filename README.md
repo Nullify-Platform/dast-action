@@ -248,11 +248,11 @@ jobs:
           target-host: 'api.myapp1234.dev'
           # Admin user with bearer token
           user-1-role: 'admin'
-          user-1-description: 'Administrator with full system access'
+          user-1-description: 'Administrator with full system access. User belongs to the internal platform team to occasionaly perform system maintanence activities.'
           user-1-token: ${{ secrets.ADMIN_TOKEN }}
           # Regular user with basic auth
           user-2-role: 'user'
-          user-2-description: 'Standard user with limited permissions'
+          user-2-description: 'Standard user with limited permissions.'
           user-2-username: ${{ secrets.USER_USERNAME }}
           user-2-password: ${{ secrets.USER_PASSWORD }}
           # API client with OAuth2
