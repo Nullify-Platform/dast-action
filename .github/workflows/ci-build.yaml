@@ -12,7 +12,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Install Nullify CLI
         run: |
           download_url="https://github.com/Nullify-Platform/cli/releases/download/v${{ env.NULLIFY_VERSION }}/nullify_${{ env.NULLIFY_ARCH }}_${{ env.NULLIFY_VERSION }}"
