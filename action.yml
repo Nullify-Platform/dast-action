@@ -258,7 +258,7 @@ inputs:
   nullify-version:
     description: Nullify CLI version to be used
     required: false
-    default: "0.11.4"
+    default: "0.11.6"
   os-arch:
     description: Nullify CLI 'OS Arch' to be used with default `linux_amd64`
     required: false
