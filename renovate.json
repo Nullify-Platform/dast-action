@@ -1,28 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
+  "extends": ["config:recommended"],
   "timezone": "Australia/Sydney",
-  "docker": {
-    "pinDigests": true
-  },
-  "packageRules": [
-    {
-      "groupName": "Dependencies",
-      "groupSlug": "dependencies",
-      "matchUpdateTypes": ["major", "minor", "patch", "digest", "pin", "pinDigest", "lockFileMaintenance"],
-      "matchPackagePatterns": ["*"],
-      "schedule": ["before 9am on monday"],
-      "labels": ["no-release"]
-    },
-    {
-      "groupName": "CLI (Patch)",
-      "groupSlug": "cli",
-      "matchUpdateTypes": ["major", "minor", "patch"],
-      "matchDepNames": ["github.com/nullify-platform/cli"],
-      "schedule": ["every 1 hour after 6am and before 8pm every weekday"],
-      "labels": ["patch"]
-    }
-  ],
+  "schedule": ["* * 1 * *"],
+  "rebaseWhen": "conflicted",
+  "docker": {"pinDigests": true},
+  "postUpdateOptions": ["gomodTidy", "gomodUpdateImportPaths"],
+  "labels": ["patch"],
   "regexManagers": [
     {
       "fileMatch": [
@@ -35,6 +19,55 @@
       ],
       "depNameTemplate": "github.com/nullify-platform/cli",
       "datasourceTemplate": "go"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Group non-major dependencies together",
+      "groupName": "Dependencies",
+      "groupSlug": "dependencies",
+      "matchUpdateTypes": ["minor", "patch", "digest", "pin", "pinDigest", "lockFileMaintenance"],
+      "matchPackagePatterns": ["*"],
+      "schedule": ["before 9am on monday"],
+      "labels": ["no-release"]
+    },
+    {
+      "description": "CLI (Patch) - hourly updates",
+      "groupName": "CLI (Patch)",
+      "groupSlug": "cli",
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "matchDepNames": ["github.com/nullify-platform/cli"],
+      "schedule": ["every 1 hour after 6am and before 8pm every weekday"],
+      "labels": ["patch"]
+    },
+    {
+      "description": "Disable major Go dependency updates (require code changes)",
+      "matchManagers": ["gomod"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "Disable major docker updates (may require testing)",
+      "matchManagers": ["docker-compose", "dockerfile"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "description": "Allow major GitHub Actions updates (usually safe)",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "GitHub Actions Major",
+      "groupSlug": "github-actions-major"
+    },
+    {
+      "description": "Disable all Python version updates (.python-version and pyproject.toml)",
+      "matchPackageNames": ["python"],
+      "enabled": false
+    },
+    {
+      "description": "Disable pyenv manager (.python-version file updates)",
+      "matchManagers": ["pyenv"],
+      "enabled": false
     }
   ]
 }
