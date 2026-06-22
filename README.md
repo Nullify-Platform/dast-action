@@ -96,10 +96,10 @@ on:
 jobs:
   nullify-dast:
     name: Nullify DAST
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Run Nullify vulnerability scanner
         uses: nullify-platform/dast-action@main
         with:
@@ -122,10 +122,10 @@ on:
 jobs:
   nullify-dast:
     name: Nullify DAST with Basic Auth
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Run Nullify vulnerability scanner
         uses: nullify-platform/dast-action@main
         with:
@@ -148,10 +148,10 @@ on:
 jobs:
   nullify-dast:
     name: Nullify DAST with OAuth2
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Run Nullify vulnerability scanner
         uses: nullify-platform/dast-action@main
         with:
@@ -175,10 +175,10 @@ on:
 jobs:
   nullify-dast:
     name: Nullify DAST with Session Auth
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Run Nullify vulnerability scanner
         uses: nullify-platform/dast-action@main
         with:
@@ -207,10 +207,10 @@ on:
 jobs:
   nullify-dast:
     name: Nullify DAST
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Run Nullify vulnerability scanner
         uses: nullify-platform/dast-action@main
         with:
@@ -236,10 +236,10 @@ on:
 jobs:
   nullify-dast:
     name: Nullify DAST with Role-Based Access Control Testing
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Run Nullify vulnerability scanner
         uses: nullify-platform/dast-action@main
         with:
