@@ -1,9 +1,6 @@
 name: Build, Test and Format
 on:
   pull_request:
-env:
-  NULLIFY_VERSION: 0.0.0
-  NULLIFY_ARCH: linux_amd64  # New environment variable
 jobs:
   build:
     name: Build, Test and Format
@@ -13,14 +10,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Install Nullify CLI
+      - name: Install the Nullify CLI version the action pins
+        id: install
         run: |
-          download_url="https://github.com/Nullify-Platform/cli/releases/download/v${{ env.NULLIFY_VERSION }}/nullify_${{ env.NULLIFY_ARCH }}_${{ env.NULLIFY_VERSION }}"
-          wget -q $download_url -O nullify
-          chmod +x nullify
-      - name: Test Nullify CLI
+          version="$(sed -n '/^  nullify-version:/,/default:/s/^    default: "\(.*\)"$/\1/p' action.yml)"
+          test -n "$version"
+          echo "Installing Nullify CLI ${version}"
+          cli="$(NULLIFY_VERSION="$version" scripts/install_cli.sh)"
+          echo "path=${cli}" >> "$GITHUB_OUTPUT"
+      - name: Test the Nullify CLI interface the action calls
+        env:
+          NULLIFY_CLI: ${{ steps.install.outputs.path }}
         run: |
-          ./nullify -d
+          "$NULLIFY_CLI" --version
+          help="$("$NULLIFY_CLI" pentest --help)"
+          for flag in --app-id --app-name --target-host; do
+            grep -q -- "$flag" <<< "$help" || { echo "nullify pentest has no $flag"; exit 1; }
+          done
       - name: Format README
         run: |
           npm install -g markdown-table-formatter
