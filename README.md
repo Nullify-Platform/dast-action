@@ -19,247 +19,70 @@
   </a>
 </p>
 
-The [Nullify DAST](https://docs.nullify.ai/features/api-scanning) GitHub Action enables you to integrate continuous API fuzzing and DAST into your CI pipeline. This action installs and orchestrates the [Nullify CLI](https://github.com/Nullify-Platform/cli).
+The Nullify DAST GitHub Action requests a [Nullify](https://nullify.ai) pentest assessment of an application from your CI pipeline. It installs the [Nullify CLI](https://github.com/Nullify-Platform/cli) and runs `nullify pentest`.
+
+Nullify reviews every request before the pentest runs. The action returns once the request is recorded: the scan is awaiting review and no traffic has been sent to your application yet.
 
 ## Getting Started
- * Add this Nullify Action to your GitHub repository
- * There is no need to configure a token - Nullify automatically authenticates with your GitHub organization
- * See our [quickstart guide](https://docs.nullify.ai/features/apis) for more info
+
+* Configure the application in Nullify first: its web services, deployments (targets) and credentials. Confirm that the target to test is non-production; Nullify refuses a request for a target that is production or not confirmed.
+* Set `nullify-host` to your Nullify instance.
+* There is no need to configure a token: the action exchanges the workflow's GitHub token for a Nullify token.
 
 ## Inputs
 
-| Name              | Description                                                                                      | Required | Default                  |
-|-------------------|--------------------------------------------------------------------------------------------------|----------|--------------------------|
-| app-name          | Name of the application to be tested                                                             | `true`   |                          |
-| spec-path         | Absolute directory of the API specification to be tested                                         | `true`   |                          |
-| target-host       | Target host endpoint of the application to be tested                                             | `true`   |                          |
-| base-args         | Arguments to be passed to the scan as a multi-line option                                        | `false`  | -v                       |
-| github-repository | The owner and repository name t0 create the issue dashboard on. For example, octocat/Hello-World | `false`  | ${{ github.repository }} |
-| github-token      | The GitHub API token to authenticate with Nullify                                                | `false`  | ${{ github.token }}      |
-| nullify-host      | Nullify API host                                                                                 | `false`  | api.nullify.ai           |
-| nullify-version   | Version of the Nullify CLI to use                                                                | `false`  | 0.11.6                   |
-| header            | Header to include in all requests to your app for authorization                                  | `false`  |                          |
-| local             | Run the scan from the GitHub action instead of on Nullify Cloud                                  | `false`  | false                    |
-| image-label       | Label to identify the Docker image being tested                                                  | `false`  |                          |
+| Name            | Description                                                                               | Required | Default             |
+|-----------------|-------------------------------------------------------------------------------------------|----------|---------------------|
+| nullify-host    | Your Nullify instance, e.g. `acme.nullify.ai`                                             | `true`   |                     |
+| app-id          | ID of the application to assess, as shown in the Nullify dashboard                        | `false`  |                     |
+| app-name        | Name of the application to assess, used when `app-id` is not set                          | `false`  |                     |
+| target-host     | URL of the deployment to assess, needed when the application has more than one deployment | `false`  |                     |
+| base-args       | Space-separated global CLI arguments, e.g. `-v` or `-d`                                   | `false`  | -v                  |
+| github-token    | GitHub token which is exchanged for a Nullify token                                       | `false`  | ${{ github.token }} |
+| nullify-version | Version of the Nullify CLI to use                                                         | `false`  | 0.29.0              |
+| os-arch         | Nullify CLI platform, e.g. `linux_amd64`; detected from the runner when empty             | `false`  |                     |
 
-### Authentication Parameters
+Set `app-id` or `app-name`.
 
-| Name                | Description                                                                | Required | Default |
-|---------------------|----------------------------------------------------------------------------|----------|---------|
-| auth-method         | Authentication method to use (basic, bearer, session, oauth2, jwt, custom) | `false`  | bearer  |
-| auth-username       | Username for Basic Auth authentication                                     | `false`  |         |
-| auth-password       | Password for Basic Auth authentication                                     | `false`  |         |
-| auth-token          | Token for Bearer Token, JWT, or OAuth2 authentication                      | `false`  |         |
-| auth-client-id      | Client ID for OAuth2 authentication                                        | `false`  |         |
-| auth-client-secret  | Client Secret for OAuth2 authentication                                    | `false`  |         |
-| auth-token-url      | Token URL for OAuth2 authentication                                        | `false`  |         |
-| auth-scope          | Scope for OAuth2 authentication                                            | `false`  |         |
-| auth-login-url      | URL to perform login for session-based authentication                      | `false`  |         |
-| auth-login-body     | JSON body to send for session-based authentication login                   | `false`  |         |
-| auth-login-selector | CSS selector to extract session token/cookie from login response           | `false`  |         |
-| auth-custom-headers | JSON string of custom headers for authentication                           | `false`  |         |
-| auth-custom-params  | JSON string of custom query parameters for authentication                  | `false`  |         |
+## Outputs
 
-### Role-Based Authorization Testing Parameters
-
-| Name                  | Description                                | Required | Default |
-|-----------------------|--------------------------------------------|----------|---------|
-| user-1-role           | Role name for user 1                       | `false`  |         |
-| user-1-description    | Custom description for user 1              | `false`  |         |
-| user-1-username       | Username for user 1 (basic auth)           | `false`  |         |
-| user-1-password       | Password for user 1 (basic auth)           | `false`  |         |
-| user-1-token          | Token for user 1 (bearer auth)             | `false`  |         |
-| user-1-client-id      | Client ID for user 1 (OAuth2)              | `false`  |         |
-| user-1-client-secret  | Client Secret for user 1 (OAuth2)          | `false`  |         |
-| user-1-token-url      | Token URL for user 1 (OAuth2)              | `false`  |         |
-| user-1-scope          | Scope for user 1 (OAuth2)                  | `false`  |         |
-| user-1-login-url      | Login URL for user 1 (session auth)        | `false`  |         |
-| user-1-login-body     | Login body for user 1 (session auth)       | `false`  |         |
-| user-1-login-selector | Login selector for user 1 (session auth)   | `false`  |         |
-| user-1-custom-headers | Custom headers for user 1 (custom auth)    | `false`  |         |
-| user-1-custom-params  | Custom parameters for user 1 (custom auth) | `false`  |         |
-
-*Note: Parameters for user-2, user-3, and user-4 follow the same pattern as user-1.*
-
-Often the `target-host` is a staging environment in a private network.
-In this case, deploy a GitHub Action runner in the same private network then set `local: 'true'` to run the scan from the GitHub action.
+| Name    | Description                                                                   |
+|---------|-------------------------------------------------------------------------------|
+| scan_id | ID of the requested pentest scan                                              |
+| status  | Status of the scan. It is `awaiting_manual` while Nullify reviews the request |
 
 ## Example Usage
 
 ```yaml
-name: nullify-dast
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-jobs:
-  nullify-dast:
-    name: Nullify DAST
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Run Nullify vulnerability scanner
-        uses: nullify-platform/dast-action@main
-        with:
-          app-name: 'My REST API'
-          header: 'Authorization: Bearer 1234'
-          spec-path: 'openapi.json'
-          target-host: 'api.myapp1234.dev'
-```
-
-## Authentication Examples
-
-### Basic Auth Example
-
-```yaml
-name: nullify-dast-basic-auth
+name: nullify-pentest
 on:
   push:
     branches:
       - main
 jobs:
-  nullify-dast:
-    name: Nullify DAST with Basic Auth
+  nullify-pentest:
+    name: Nullify pentest
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Run Nullify vulnerability scanner
+      - name: Request a Nullify pentest assessment
+        id: pentest
         uses: nullify-platform/dast-action@main
         with:
-          app-name: 'My REST API'
-          spec-path: 'openapi.json'
-          target-host: 'api.myapp1234.dev'
-          auth-method: 'basic'
-          auth-username: ${{ secrets.API_USERNAME }}
-          auth-password: ${{ secrets.API_PASSWORD }}
-          local: 'true'
+          nullify-host: acme.nullify.ai
+          app-name: 'Payments API'
+          target-host: 'https://api.staging.example.dev'
+      - name: Show the request
+        run: echo "Scan ${{ steps.pentest.outputs.scan_id }} is ${{ steps.pentest.outputs.status }}"
 ```
 
-### OAuth2 Example
+The action runs on Linux and macOS runners and needs `curl`, `tar` and `jq`, which GitHub-hosted runners provide.
 
-```yaml
-name: nullify-dast-oauth
-on:
-  schedule:
-    - cron: '0 0 * * 1'  # Run weekly on Mondays
-jobs:
-  nullify-dast:
-    name: Nullify DAST with OAuth2
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Run Nullify vulnerability scanner
-        uses: nullify-platform/dast-action@main
-        with:
-          app-name: 'My OAuth API'
-          spec-path: 'openapi.json'
-          target-host: 'api.myapp1234.dev'
-          auth-method: 'oauth2'
-          auth-client-id: ${{ secrets.OAUTH_CLIENT_ID }}
-          auth-client-secret: ${{ secrets.OAUTH_CLIENT_SECRET }}
-          auth-token-url: 'https://auth.myapp1234.dev/oauth/token'
-          auth-scope: 'read write'
-          local: 'true'
-```
+## Migrating from an earlier version
 
-### Session-based Authentication Example
+The action now calls `nullify pentest` from Nullify CLI 0.29.0, which requests an assessment of an application configured in Nullify.
 
-```yaml
-name: nullify-dast-session
-on:
-  pull_request:
-jobs:
-  nullify-dast:
-    name: Nullify DAST with Session Auth
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Run Nullify vulnerability scanner
-        uses: nullify-platform/dast-action@main
-        with:
-          app-name: 'My Web App'
-          spec-path: 'openapi.json'
-          target-host: 'app.myapp1234.dev'
-          auth-method: 'session'
-          auth-login-url: 'https://app.myapp1234.dev/login'
-          auth-login-body: '{"username":"${{ secrets.APP_USERNAME }}","password":"${{ secrets.APP_PASSWORD }}"}'
-          auth-login-selector: 'response.headers.set-cookie'
-          local: 'true'
-```
-
-## Example Usage (Enterprise Tier)
-
-Enterprise tier customers have a custom domain name for the Nullify API.
-This must be set using the `nullify-host` input.
-
-```yaml
-name: nullify-dast
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-jobs:
-  nullify-dast:
-    name: Nullify DAST
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Run Nullify vulnerability scanner
-        uses: nullify-platform/dast-action@main
-        with:
-          nullify-host: api.mycompany.nullify.ai
-          app-name: 'My REST API'
-          header: 'Authorization: Bearer 1234'
-          spec-path: 'openapi.json'
-          target-host: 'api.myapp1234.dev'
-```
-
-### Authorization Model Assessment
-
-For authorization testing, you can provide multiple users with different roles to verify access controls:
-**Important**: When using `auth-users`, any other single-user authentication parameters (like `auth-token`, `auth-username`, etc.) will be ignored.
-
-### Role-Based Authorization with Individual User Parameters
-
-```yaml
-name: nullify-dast-rbac
-on:
-  schedule:
-    - cron: '0 0 * * 1'  # Run weekly on Mondays
-jobs:
-  nullify-dast:
-    name: Nullify DAST with Role-Based Access Control Testing
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Run Nullify vulnerability scanner
-        uses: nullify-platform/dast-action@main
-        with:
-          app-name: 'My Role-Based API'
-          spec-path: 'openapi.json'
-          target-host: 'api.myapp1234.dev'
-          # Admin user with bearer token
-          user-1-role: 'admin'
-          user-1-description: 'Administrator with full system access. User belongs to the internal platform team to occasionaly perform system maintanence activities.'
-          user-1-token: ${{ secrets.ADMIN_TOKEN }}
-          # Regular user with basic auth
-          user-2-role: 'user'
-          user-2-description: 'Standard user with limited permissions.'
-          user-2-username: ${{ secrets.USER_USERNAME }}
-          user-2-password: ${{ secrets.USER_PASSWORD }}
-          # API client with OAuth2
-          user-3-role: 'api-client'
-          user-3-client-id: ${{ secrets.CLIENT_ID }}
-          user-3-client-secret: ${{ secrets.CLIENT_SECRET }}
-          user-3-token-url: 'https://auth.myapp1234.dev/oauth/token'
-          user-3-scope: 'read write'
-          local: 'true'
-```
+* `nullify-host` is required.
+* `spec-path` and `header`, every `auth-*` input and every `user-N-*` input are removed. Configure the API schema and credentials on the application in Nullify instead.
+* `local` and `image-label` are removed. A target that is not reachable from the internet is assessed by Nullify with access to your network: contact Nullify to arrange it.
+* `github-repository` is removed: the action uses the workflow's repository.
+* `scan_id` and `status` are new outputs.

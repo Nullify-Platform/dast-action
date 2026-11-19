@@ -1,350 +1,105 @@
 name: 'Nullify DAST Action'
-description: 'Test your API endpoints with Nullify DAST'
+description: 'Request a Nullify pentest assessment of your application'
 branding:
   icon: 'activity'
   color: 'purple'
 inputs:
+  nullify-host:
+    description: Your Nullify instance, e.g. acme.nullify.ai
+    required: true
+  app-id:
+    description: ID of the application to assess, as shown in the Nullify dashboard
+    required: false
   app-name:
-    description: Name of the application to be tested
-    required: true
-  spec-path:
-    description: Absolute directory of the API specification to be tested
-    required: true
+    description: Name of the application to assess, used when app-id is not set
+    required: false
   target-host:
-    description: Target host endpoint of the application to be tested
-    required: true
+    description: URL of the deployment to assess, needed when the application has more than one deployment
+    required: false
   base-args:
-    description: Space-separated arguments to include (e.g. -d, -v for debug and verbose modes)
+    description: Space-separated global CLI arguments (e.g. -d, -v for debug and verbose modes)
     required: false
     default: "-v"
-  github-repository:
-    description: Name of the GitHub repository
-    required: false
-    default: ${{ github.repository }}
   github-token:
-    description: GitHub API token which will be exchanged for a Nullify token
+    description: GitHub token which will be exchanged for a Nullify token
     required: false
     default: ${{ github.token }}
-  header:
-    description: Header to include in authorization request
-    required: false
-  auth-method:
-    description: Authentication method to use (basic, bearer, session, oauth2, jwt, custom)
-    required: false
-    default: "bearer"
-  auth-username:
-    description: Username for Basic Auth authentication
-    required: false
-  auth-user-description:
-    description: Description for the user
-    required: false
-  auth-password:
-    description: Password for Basic Auth authentication
-    required: false
-  auth-token:
-    description: Token for Bearer Token, JWT, or OAuth2 authentication
-    required: false
-  auth-client-id:
-    description: Client ID for OAuth2 authentication
-    required: false
-  auth-client-secret:
-    description: Client Secret for OAuth2 authentication
-    required: false
-  auth-token-url:
-    description: Token URL for OAuth2 authentication
-    required: false
-  auth-scope:
-    description: Scope for OAuth2 authentication
-    required: false
-  auth-login-url:
-    description: URL to perform login for session-based authentication
-    required: false
-  auth-login-body:
-    description: JSON body to send for session-based authentication login
-    required: false
-  auth-login-selector:
-    description: CSS selector to extract session token/cookie from login response
-    required: false
-  auth-custom-headers:
-    description: JSON string of custom headers for authentication
-    required: false
-  auth-custom-params:
-    description: JSON string of custom query parameters for authentication
-    required: false
-  user-1-role:
-    description: Role for user 1
-    required: false
-  user-1-auth-method:
-    description: Authentication method for user 1
-    required: false
-  user-1-username:
-    descript ion: Username for user 1
-    required: false
-  user-1-password:
-    description: Password for user 1
-    required: false
-  user-1-token:
-    description: Token for user 1
-    required: false
-  user-1-client-id:
-    description: Client ID for user 1
-    required: false
-  user-1-client-secret:
-    description: Client Secret for user 1
-    required: false
-  user-1-token-url:
-    description: Token URL for user 1
-    required: false
-  user-1-scope:
-    description: Scope for user 1
-    required: false
-  user-1-login-url:
-    description: Login URL for user 1
-    required: false
-  user-1-login-body:
-    description: Login body for user 1
-    required: false
-  user-1-login-selector:
-    description: Login selector for user 1
-    required: false
-  user-1-custom-headers:
-    description: Custom headers for user 1
-    required: false
-  user-1-custom-params:
-    description: Custom params for user 1
-    required: false
-  user-1-description:
-    description: Description for user 1
-    required: false
-  user-2-role:
-    description: Role for user 2
-    required: false
-  user-2-auth-method:
-    description: Authentication method for user 2
-    required: false
-  user-2-username:
-    description: Username for user 2
-    required: false
-  user-2-password:
-    description: Password for user 2
-    required: false
-  user-2-token:
-    description: Token for user 2
-    required: false
-  user-2-client-id:
-    description: Client ID for user 2
-    required: false   
-  user-2-client-secret:
-    description: Client Secret for user 2
-    required: false
-  user-2-token-url:
-    description: Token URL for user 2
-    required: false
-  user-2-scope:
-    description: Scope for user 2
-    required: false
-  user-2-login-url:
-    description: Login URL for user 2
-    required: false
-  user-2-login-body:
-    description: Login body for user 2  
-    required: false
-  user-2-login-selector:
-    description: Login selector for user 2
-    required: false
-  user-2-custom-headers:
-    description: Custom headers for user 2
-    required: false
-  user-2-custom-params:
-    description: Custom params for user 2
-    required: false
-  user-2-description:
-    description: Description for user 2
-    required: false
-  user-3-role:
-    description: Role for user 3
-    required: false
-  user-3-auth-method:
-    description: Authentication method for user 3
-    required: false
-  user-3-username:
-    description: Username for user 3
-    required: false
-  user-3-password:
-    description: Password for user 3
-    required: false
-  user-3-token:
-    description: Token for user 3
-    required: false
-  user-3-client-id:
-    description: Client ID for user 3
-    required: false
-  user-3-client-secret:
-    description: Client Secret for user 3
-    required: false
-  user-3-token-url:
-    description: Token URL for user 3
-    required: false
-  user-3-scope:
-    description: Scope for user 3
-    required: false
-  user-3-login-url:
-    description: Login URL for user 3
-    required: false
-  user-3-login-body:
-    description: Login body for user 3
-    required: false
-  user-3-login-selector:
-    description: Login selector for user 3
-    required: false
-  user-3-custom-headers:
-    description: Custom headers for user 3
-    required: false
-  user-3-custom-params:
-    description: Custom params for user 3
-    required: false
-  user-3-description:
-    description: Description for user 3
-    required: false
-  user-4-role:
-    description: Role for user 4
-    required: false
-  user-4-auth-method:
-    description: Authentication method for user 4
-    required: false
-  user-4-username:
-    description: Username for user 4
-    required: false
-  user-4-password:
-    description: Password for user 4
-    required: false
-  user-4-token:
-    description: Token for user 4
-    required: false
-  user-4-client-id:
-    description: Client ID for user 4
-    required: false
-  user-4-client-secret:
-    description: Client Secret for user 4
-    required: false
-  user-4-token-url:
-    description: Token URL for user 4
-    required: false
-  user-4-scope:
-    description: Scope for user 4
-    required: false
-  user-4-login-url:
-    description: Login URL for user 4
-    required: false
-  user-4-login-body:
-    description: Login body for user 4
-    required: false
-  user-4-login-selector:
-    description: Login selector for user 4
-    required: false
-  user-4-custom-headers:
-    description: Custom headers for user 4
-    required: false
-  user-4-custom-params:
-    description: Custom params for user 4
-    required: false
-  user-4-description:
-    description: Description for user 4
-    required: false
-  nullify-host:
-    description: Nullify API host e.g. api.nullify.ai
-    required: false
-    default: "api.nullify.ai"
   nullify-version:
     description: Nullify CLI version to be used
     required: false
-    default: "0.11.6"
+    default: "0.29.0"
   os-arch:
-    description: Nullify CLI 'OS Arch' to be used with default `linux_amd64`
+    description: Nullify CLI platform, e.g. linux_amd64. Detected from the runner when empty
     required: false
-    default: "linux_amd64"
-  local:
-    description: Nullify dynamic analysis scan run locally
-    required: false
-    default: 'false'
-  image-label:
-    description: Label to identify the Docker image to use for the scan
-    required: false
+    default: ""
+outputs:
+  scan_id:
+    description: ID of the requested pentest scan
+    value: ${{ steps.request.outputs.scan_id }}
+  status:
+    description: Status of the scan. It is awaiting_manual while Nullify reviews the request
+    value: ${{ steps.request.outputs.status }}
 
 runs:
   using: "composite"
   steps:
     - name: Install Nullify CLI
-      shell: sh
-      run: |
-        download_url="https://github.com/Nullify-Platform/cli/releases/download/v${{ inputs.nullify-version }}/nullify_${{ inputs.os-arch }}_${{ inputs.nullify-version }}"
-        wget -q $download_url -O ./nullify
-        sudo chmod +x ./nullify
-    - name: Setup Authentication
+      id: install
       shell: bash
+      env:
+        NULLIFY_VERSION: ${{ inputs.nullify-version }}
+        NULLIFY_OS_ARCH: ${{ inputs.os-arch }}
       run: |
-        if [ -f "${GITHUB_WORKSPACE}/scripts/setup_auth.sh" ]; then
-          bash "${GITHUB_WORKSPACE}/scripts/setup_auth.sh" ~/.nullify/auth_config.json
+        cli="$("${GITHUB_ACTION_PATH}/scripts/install_cli.sh")"
+        echo "path=${cli}" >> "$GITHUB_OUTPUT"
+    - name: Request Nullify pentest assessment
+      id: request
+      shell: bash
+      env:
+        NULLIFY_CLI: ${{ steps.install.outputs.path }}
+        NULLIFY_HOST: ${{ inputs.nullify-host }}
+        NULLIFY_GITHUB_OWNER_ID: ${{ github.repository_owner_id }}
+        GITHUB_TOKEN_INPUT: ${{ inputs.github-token }}
+        APP_ID: ${{ inputs.app-id }}
+        APP_NAME: ${{ inputs.app-name }}
+        TARGET_HOST: ${{ inputs.target-host }}
+        BASE_ARGS: ${{ inputs.base-args }}
+      run: |
+        if [ -z "$NULLIFY_HOST" ]; then
+          echo "::error::nullify-host is required: set it to your Nullify instance, e.g. acme.nullify.ai"
+          exit 1
+        fi
+        if [ -z "$APP_ID" ] && [ -z "$APP_NAME" ]; then
+          echo "::error::set app-id or app-name"
+          exit 1
+        fi
+
+        args=(pentest)
+        if [ -n "$APP_ID" ]; then
+          args+=(--app-id "$APP_ID")
+        fi
+        if [ -n "$APP_NAME" ]; then
+          args+=(--app-name "$APP_NAME")
+        fi
+        if [ -n "$TARGET_HOST" ]; then
+          args+=(--target-host "$TARGET_HOST")
+        fi
+        read -r -a base_args <<< "$BASE_ARGS"
+
+        result="$("$NULLIFY_CLI" "${base_args[@]}" --host "$NULLIFY_HOST" --github-token "$GITHUB_TOKEN_INPUT" "${args[@]}")"
+        echo "$result"
+
+        scan_id="$(jq -r '.scan_id' <<< "$result")"
+        status="$(jq -r '.status' <<< "$result")"
+        {
+          echo "scan_id=${scan_id}"
+          echo "status=${status}"
+        } >> "$GITHUB_OUTPUT"
+
+        if [ "$(jq -r '.awaiting_review' <<< "$result")" = "true" ]; then
+          message="Requested a pentest assessment. Nullify reviews the request before the pentest runs, so scan ${scan_id} is awaiting review."
         else
-          echo "Warning: setup_auth.sh script not found"
+          message="Pentest scan ${scan_id} is ${status}."
         fi
-    - name: Execute Nullify DAST
-      if: ${{ inputs.local == 'true' }}
-      shell: sh
-      run: |
-        repo_fullname=${{ inputs.github-repository }}
-        repo_owner=${repo_fullname%%/*}
-        repo_name=${repo_fullname#*/}
-        export GITHUB_ACTIONS=true
-        export GITHUB_ACTION_REPOSITORY=${{ github.repository }}
-        
-        # Determine auth arguments
-        AUTH_ARGS=""
-        if [ ! -z "${{ inputs.header }}" ]; then
-          AUTH_ARGS="--header \"${{ inputs.header }}\""
-        elif [ -f ~/.nullify/auth_config.json ]; then
-          AUTH_ARGS="--auth-config ~/.nullify/auth_config.json"
-        fi
-        
-        ./nullify ${{ inputs.base-args }} \
-          --host "${{ inputs.nullify-host }}" \
-          --github-token "${{ inputs.github-token }}" \
-          dast \
-            --local \
-            --app-name "${{ inputs.app-name }}" \
-            --spec-path "${{ inputs.spec-path }}" \
-            --target-host "${{ inputs.target-host }}" \
-            --github-owner "$repo_owner" \
-            --github-repo "$repo_name" \
-            $AUTH_ARGS \
-            ${{ inputs.image-label != '' && format('--image-label "{0}"', inputs.image-label) || '' }}
-            
-    - name: Execute Nullify DAST
-      if: ${{ inputs.local != 'true' }}
-      shell: sh
-      run: |
-        repo_fullname=${{ inputs.github-repository }}
-        repo_owner=${repo_fullname%%/*}
-        repo_name=${repo_fullname#*/}
-        export GITHUB_ACTIONS=true
-        export GITHUB_ACTION_REPOSITORY=${{ github.repository }}
-        
-        # Determine auth arguments
-        AUTH_ARGS=""
-        if [ ! -z "${{ inputs.header }}" ]; then
-          AUTH_ARGS="--header \"${{ inputs.header }}\""
-        elif [ -f ~/.nullify/auth_config.json ]; then
-          AUTH_ARGS="--auth-config ~/.nullify/auth_config.json"
-        fi
-        
-        ./nullify ${{ inputs.base-args }} \
-          --host "${{ inputs.nullify-host }}" \
-          --github-token "${{ inputs.github-token }}" \
-          dast \
-            --app-name "${{ inputs.app-name }}" \
-            --spec-path "${{ inputs.spec-path }}" \
-            --target-host "${{ inputs.target-host }}" \
-            --github-owner "$repo_owner" \
-            --github-repo "$repo_name" \
-            $AUTH_ARGS \
-            ${{ inputs.image-label != '' && format('--image-label "{0}"', inputs.image-label) || '' }}
+        echo "::notice::${message}"
+        echo "${message}" >> "$GITHUB_STEP_SUMMARY"
